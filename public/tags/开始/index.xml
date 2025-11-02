@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>开始 on My Feishu Blog</title>
+    <link>http://localhost:1313/feishu-blog/tags/%E5%BC%80%E5%A7%8B/</link>
+    <description>Recent content in 开始 on My Feishu Blog</description>
+    <generator>Hugo -- 0.150.0</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 01 Nov 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/feishu-blog/tags/%E5%BC%80%E5%A7%8B/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我的第一篇文章</title>
+      <link>http://localhost:1313/feishu-blog/posts/hello/</link>
+      <pubDate>Fri, 01 Nov 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/feishu-blog/posts/hello/</guid>
+      <description>&lt;h1 id=&#34;欢迎来到我的博客&#34;&gt;欢迎来到我的博客&lt;/h1&gt;
+&lt;p&gt;这是我用Hugo搭建的第一篇文章！&lt;/p&gt;
+&lt;h2 id=&#34;功能测试&#34;&gt;功能测试&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;支持Markdown&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;粗体文字&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;斜体文字&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://google.com&#34;&gt;链接测试&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;代码块测试&#34;&gt;代码块测试&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hello&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello, Hugo!&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;很期待接下来的写作之旅！&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<h1 id="欢迎来到我的博客">欢迎来到我的博客</h1>
+<p>这是我用Hugo搭建的第一篇文章！</p>
+<h2 id="功能测试">功能测试</h2>
+<ul>
+<li>支持Markdown</li>
+<li><strong>粗体文字</strong></li>
+<li><em>斜体文字</em></li>
+<li><a href="https://google.com">链接测试</a></li>
+</ul>
+<h2 id="代码块测试">代码块测试</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello</span>():
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Hello, Hugo!&#34;</span>)
+</span></span></code></pre></div><p>很期待接下来的写作之旅！</p>
+]]></content:encoded>
+    </item>
+  </channel>
+</rss>
