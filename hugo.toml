@@ -1,6 +1,6 @@
 baseURL = 'https://LArielOzjH.github.io/blogs/'
 languageCode = 'zh-cn'
-title = 'LArielO's LAB'
+title = "LArielO's LAB"
 theme = 'PaperMod'
 
 enableEmoji = true
@@ -19,8 +19,6 @@ ShowFullTextinRSS = true
 [params.homeInfoParams]
 Title = "Welcome to LArielO's Blog!"
 Content = "for AI chips design"
-
-
 
 ShowSearchPage = true
 
@@ -41,7 +39,7 @@ url = "/tags/"
 weight = 30
 
 [[menu.main]]
-name = "About"  
+name = "About"
 url = "/about/"
 weight = 40
 
