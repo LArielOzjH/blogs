@@ -1,13 +1,13 @@
 baseURL = 'https://LArielOzjH.github.io/blogs/'
 languageCode = 'zh-cn'
-title = 'My Feishu Blog'
+title = 'LArielO's LAB'
 theme = 'PaperMod'
 
 enableEmoji = true
 
 [params]
-author = 'Your Name'
-description = "使用飞书+Hugo+Elog搭建的个人博客"
+author = 'LArielO'
+description = "Personal Blogs in AI chips design"
 ShowReadingTime = true
 ShowShareButtons = true
 ShowPostNavLinks = true
@@ -17,30 +17,32 @@ ShowWordCount = true
 ShowFullTextinRSS = true
 
 [params.homeInfoParams]
-Title = "欢迎来到我的博客"
-Content = "在飞书写作，自动同步发布"
+Title = "Welcome to LArielO's Blog!"
+Content = "for AI chips design"
+
+
 
 ShowSearchPage = true
 
 [menu]
 [[menu.main]]
-name = "首页"
+name = "Main"
 url = "/"
 weight = 10
 
 [[menu.main]]
-name = "文章"
+name = "Posts"
 url = "/posts/"
 weight = 20
 
 [[menu.main]]
-name = "标签"
+name = "Tags"
 url = "/tags/"
 weight = 30
 
 [[menu.main]]
-name = "搜索"
-url = "/search/"
+name = "About"  
+url = "/about/"
 weight = 40
 
 [outputs]
