@@ -23,7 +23,7 @@ Batch Normalization（BN）通过对每一层的输入进行标准化（Normaliz
 ### BN limitation
 ![image]({{< rurl "images/HwFPbofd6og0O6xuDjlcoeJhnEc.png" >}})
 ### LN：Layer Norm
-![image]({{ "images/WoqIbAeSFocPP6xvN19cda14nfc.png" | relURL }})
+![image]({{< rurl "images/WoqIbAeSFocPP6xvN19cda14nfc.png" >}})
 ```python
 # NLP Example
 batch, sentence_length, embedding_dim = 20, 5, 10
