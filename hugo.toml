@@ -1,7 +1,7 @@
 baseURL = 'https://LArielOzjH.github.io/blogs/'
 languageCode = 'zh-cn'
 title = "LArielO's LAB"
-theme = 'PaperMod'
+theme = 'doks'
 
 enableEmoji = true
 
