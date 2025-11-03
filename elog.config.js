@@ -30,7 +30,7 @@ module.exports = {
     platform: 'local',
     local: {
       outputDir: './static/images',
-      prefixKey: '/images'
+      prefixKey: '/blogs/images/'
     }
   }
 }
