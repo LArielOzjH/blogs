@@ -21,7 +21,7 @@ Batch Normalization（BN）通过对每一层的输入进行标准化（Normaliz
 
 
 ### BN limitation
-![image](/blogs/images/HwFPbofd6og0O6xuDjlcoeJhnEc.png)
+![image]({{< relref "images/HwFPbofd6og0O6xuDjlcoeJhnEc.png" >}})
 
 ### LN：Layer Norm
 ![image]({{ "images/WoqIbAeSFocPP6xvN19cda14nfc.png" | relURL }})
