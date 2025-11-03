@@ -1,4 +1,4 @@
-Batch Norm
+## Batch Norm
 Reference：
 
 https://www.zhihu.com/question/553541499/answer/1892702115723452465
@@ -21,9 +21,10 @@ Batch Normalization（BN）通过对每一层的输入进行标准化（Normaliz
 
 
 ### BN limitation
-![image]({{< rurl "images/HwFPbofd6og0O6xuDjlcoeJhnEc.png" >}})
+![image](/blogs/images/HwFPbofd6og0O6xuDjlcoeJhnEc.png)
+
 ### LN：Layer Norm
-![image]({{< rurl "images/WoqIbAeSFocPP6xvN19cda14nfc.png" >}})
+![image](/blogs/images/WoqIbAeSFocPP6xvN19cda14nfc.png)
 ```python
 # NLP Example
 batch, sentence_length, embedding_dim = 20, 5, 10
@@ -77,7 +78,7 @@ https://spaces.ac.cn/archives/10352
 
 把一个词转换成向量，就好像把一个词映射到了一个高维空间的位置，意思相近的词会在高维空间内比较靠近，而加上位置向量，会让位置相近的词更靠近，位置远的词离得更远。为什么用cos，sin这种方式，使用sin和cos编码可以得到词语之间的相对位置。
 ### RoPE (Rotary Position Embedding)
-![image]({{ "images/LHeYbyvZzoGNMXxvdnocjdFEn4L.png" | relURL }})
+![image](/blogs/images/LHeYbyvZzoGNMXxvdnocjdFEn4L.png)
 
 ```python
 # 传统方法：位置信息加到向量上
@@ -110,7 +111,7 @@ def rope_rotation(x, position, dim):
 RoPE在实现上是绝对位置编码，但结合基于内积的Attention来用时，内积之后位置会自动作差，（想象两个向量做内积只跟夹角有关，一个意思）从而实现了相对位置编码的效果。可同一大小的向量可以作差，不同大小的向量怎么作差呢？这就是多模态位置编码的困难所在。
 
 不少工作选择“逃避”这个困难，直接Flatten所有模态然后使用RoPE-1D，这不失为一种解决办法，但终究显得不够优雅。此外，强行Flatten也可能会降低模型性能的天花板，因为[《VisionLLaMA: A Unified LLaMA Backbone for Vision Tasks》](https://papers.cool/arxiv/2403.00522)等工作已经表明，RoPE-2D的引入有助于提升模型效果尤其是变分辨率输入的效果。
-![image]({{ "images/RxRzbjNHuooidzx93ZAcftCVnrf.png" | relURL }})
+![image](/blogs/images/RxRzbjNHuooidzx93ZAcftCVnrf.png)
 ---
 ## CLS token
 Reference:
@@ -432,7 +433,7 @@ Reference:
 https://zhuanlan.zhihu.com/p/699623105
 
 https://arxiv.org/pdf/2305.10355
-![image]({{ "images/XUZubPm4KoCUj9xRvbZcvnBfnqe.png" | relURL }})
+![image](/blogs/images/XUZubPm4KoCUj9xRvbZcvnBfnqe.png)
  a more suitable method for the stable, fair and flexible object hallucination evaluation of LVLMs, namely pollingbased object probing evaluation (POPE). Specifically, POPE formulates the evaluation of object hallucination as a binary classification task that prompts LVLMs to output “Yes” or “No”, e.g., “Is there a chair in the image?”. In this way, by sampling objects that LVLMs are prone to hallucinate, we can construct a set of hard questions to poll LVLMs. As standard answers to these questions are just “Yes” or “No”, we can easily identify them without complex parsing rules, and avoid the influence of instruction designs and caption length, thus guaranteeing stability, fairness and flexibility
 ## KV cache
 ## GGML

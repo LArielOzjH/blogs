@@ -1,21 +1,6 @@
 {
   "docs": [
     {
-      "id": "EUXndxNsSosVr1xT0sMcVveKn6c",
-      "doc_id": "EUXndxNsSosVr1xT0sMcVveKn6c",
-      "updated": 1762139100000,
-      "properties": {
-        "title": "PRML-DL",
-        "urlname": "EUXndxNsSosVr1xT0sMcVveKn6c",
-        "date": "2025-11-03 11:04:46",
-        "updated": "2025-11-03 11:05:00"
-      },
-      "catalog": [],
-      "realName": "PRML-DL",
-      "relativePath": "/PRML-DL.md",
-      "docPath": "./content/posts"
-    },
-    {
       "id": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
       "doc_id": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
       "updated": 1762137620000,
@@ -28,6 +13,21 @@
       "catalog": [],
       "realName": "VLM pruning ! Hw and Alg co-design",
       "relativePath": "/VLM pruning ! Hw and Alg co-design.md",
+      "docPath": "./content/posts"
+    },
+    {
+      "id": "EUXndxNsSosVr1xT0sMcVveKn6c",
+      "doc_id": "EUXndxNsSosVr1xT0sMcVveKn6c",
+      "updated": 1762139100000,
+      "properties": {
+        "title": "PRML-DL",
+        "urlname": "EUXndxNsSosVr1xT0sMcVveKn6c",
+        "date": "2025-11-03 11:04:46",
+        "updated": "2025-11-03 11:05:00"
+      },
+      "catalog": [],
+      "realName": "PRML-DL",
+      "relativePath": "/PRML-DL.md",
       "docPath": "./content/posts"
     }
   ],

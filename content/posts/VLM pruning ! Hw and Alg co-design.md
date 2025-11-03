@@ -6,7 +6,7 @@
 
 此外也是采用了merge，整篇文章没什么突出的算法核心点，但是工程、实验做的很扎实
 ## **[CLS] Attention is All You Need for Training-Free Visual Token Pruning: Make VLM Inference Faster**
-![image]({{ "images/R2UWbLa34oFCItxsmIAcBwchnTc.png" | relURL }})
+![image](/blogs/images/R2UWbLa34oFCItxsmIAcBwchnTc.png)
 ---
 ### **Background Analysis：**_**attention shift **_**and **_**attention dispersion**_
 1. _**Attention shift: **_** a tendency for textual attention to focus more on later parts of the visual token sequence, which is not desirable for preserving valuable visual information.**
@@ -16,12 +16,12 @@
 
 
 ### **Methods**
-![image]({{ "images/DgQMb6qIco9naKxhiWzc6TAHnWh.png" | relURL }})
+![image](/blogs/images/DgQMb6qIco9naKxhiWzc6TAHnWh.png)
 核心的想法是用CLS attention 来决定prune掉的token（patch），经过 Visual Encoder 之后，取CLS attention，后R%的被prune掉（提到一个动态阈值的公式，没啥用），认为这些部分的patch对于整体的语义贡献很低。整体就是简单的思路采用CLS token的attention score去处理。
 
 这里的问题就是到底是否能真正以CLS token的attention值来说明真正的importance然后做prune，这样做基本不需要硬件的额外支持
 ### **Scores**
-![image]({{ "images/VOZFbT9N3o9iaBxCQUicNL47nKe.png" | relURL }})
+![image](/blogs/images/VOZFbT9N3o9iaBxCQUicNL47nKe.png)
 从ablation来看整个论文的思路基本都是在考虑：
 1. prune的位置：LLM浅层 OR LLM之前（visual encoder之后）
 
@@ -74,13 +74,13 @@ $$
 
 ## **MADTP: Multimodal Alignment-Guided Dynamic Token Pruning for  Accelerating Vision-Language Transformer**
 ---
-![image]({{ "images/YRIEbmTgqorENvx2tmDcVrIbnff.png" | relURL }})
+![image](/blogs/images/YRIEbmTgqorENvx2tmDcVrIbnff.png)
 ### **MAG**
 
 
 ### **DTP**
 **事实证明，单模态压缩中的动态令牌修剪比静态令牌修剪更有效，因为它可以根据输入实例的复杂程度自适应调整模型的压缩率。**
-![image]({{ "images/GZqrbdyPSoDvgAx8octcFCM0nvE.png" | relURL }})
+![image](/blogs/images/GZqrbdyPSoDvgAx8octcFCM0nvE.png)
 ### **TIS**
 $$
 TIS = (Scls + Sself + Stoken)/3                      
@@ -94,7 +94,7 @@ $$
 
 
 ## **VScan: Rethinking Visual Token Reduction for Efficient Large Vision-Language Models**
-![image]({{ "images/PzhNbrL9SocCajxN5CncqrLDnJe.png" | relURL }})
+![image](/blogs/images/PzhNbrL9SocCajxN5CncqrLDnJe.png)
 ---
 ### **Observations**
 1. **In the visual encoding stage, the visual encoder attends to locally significant tokens in the shallow layers, focusing on fine-grained local details, while at deeper layers, it gradually shift its focus to a highly condensed set of tokens that encapsulate broader global context;（visual encoder里面随着层数增多，注意力呈现的变化趋势,下面两个图我自己可视化了一下，可以看到attention focus由广泛到集中，但问题是集中的部分并不完全是我们人眼所普遍认为的focus）**
@@ -105,14 +105,14 @@ $$
 ### **Current methods limitations**
 **可以看到这里用了这样一张图片和query来disable之前的几种主流方法**
 
-![image]({{ "images/ZtWWbX6aHo8m1Cx9xQdcZulHnEe.png" | relURL }})
+![image](/blogs/images/ZtWWbX6aHo8m1Cx9xQdcZulHnEe.png)
 
 **然后做了3个study：各种可视化去探究LLM对于textual和visual信息的处理随着层数变化的改变情况**
-![image]({{ "images/OQvkb3nnuopOgrxweM2cPr0sn5I.png" | relURL }})
+![image](/blogs/images/OQvkb3nnuopOgrxweM2cPr0sn5I.png)
 **左边的图其实就是attention shift的可视化（位置编码的影响），随着LLM layers增多，这种现象逐渐diminish**
 
 **右边的图：We observe that the middle LLM layers are primarily responsible for interacting with the visual tokens, whereas the early and deep layers focus predominantly on processing textual information.就是LLM的中间的那些layers会更倾向于结合visual信息聚合处理，然而shallow/deep layer都会focus更多在textual信息上**
-![image]({{ "images/IO9vbikGqoUEXwxNisucXMZHnG0.png" | relURL }})
+![image](/blogs/images/IO9vbikGqoUEXwxNisucXMZHnG0.png)
 **We observe that in more challenging open-ended tasks like GQA, the next-token predictions stabilize around LLM layer 20, whereas in simpler yes/no tasks such as POPE, the predictions converge earlier, around LLM layer 16.**
 
 **在这一部分得出的结论就是：LLM的early layers并不是最适合pruning的层数位置，因为**
@@ -126,7 +126,7 @@ $$
 1. **minimizes disruption to model predictions（太深层起不到太好的pruning效果而且可能会有disrupt）**
 
 ### **Methods**
-![image]({{ "images/MtSRbnAfHoWKSexJlXGctCgDn4e.png" | relURL }})
+![image](/blogs/images/MtSRbnAfHoWKSexJlXGctCgDn4e.png)
 #### **Reducing Visual Redundancy via Complementary Global and Local Scans**
 ##### **Global Scan**
 **因为visual encoder的最后一层（或者倒数第二层）是global content，所以采用跟之前工作类似的方法CLS attention的方式来选择 global tokens （g）**
@@ -141,17 +141,17 @@ $$
 
 
 ## **Skip-Vision: Efficient and Scalable Acceleration of Vision-Language Models via Adaptive Token Skipping**
-![image]({{ "images/IjGpbXnSroa5uoxmbiAcdZzIn9g.png" | relURL }})
+![image](/blogs/images/IjGpbXnSroa5uoxmbiAcdZzIn9g.png)
 ---
 
 ## **Accelerating Pre-training of Multimodal LLMs via Chain-of-Sight**
-![image]({{ "images/DI3hbanZloB0KCxy4iccxpavnEe.png" | relURL }})
+![image](/blogs/images/DI3hbanZloB0KCxy4iccxpavnEe.png)
 ---
 ### **Brief Introduction **
 **用更少的visual tokens训练通常意味着perfomance的下降，那么有没有一种方式能够解决这个问题，用更少的visual tokens去包含更多的信息，且能不受input resolution的影响，从而实现更efficient的pre-training？**
 
 **CoS(chain of sight)就是这样一个方式，这是一个vision-language bridge的模块，整体的思路有点类似之前的Perceiver抑或是Q-former，但还有一个特点是对预训练和微调部分使用的token有很大差别，后者使用更多更fine的tokens，以获取更finer的vision信息，从而弥补perfomance可能的掉点**
-![image]({{ "images/HSSVbssrXodcvmxT2z4ciYR5n8d.png" | relURL }})
+![image](/blogs/images/HSSVbssrXodcvmxT2z4ciYR5n8d.png)
 ```plaintext
 The core mechanism is our multi-scale visual resampler, which produces visual tokens 
 of multiple visual scales. Inspired by the classical concept of multi-scale feature hierarchy in visual 
@@ -177,7 +177,7 @@ necessity for an additional pre-training phase.
 
 
 #### **Post-Pretrain Token Scaling**
-![image]({{ "images/BPBibeDZZokNk6xe0LycsqwXnuc.png" | relURL }})
+![image](/blogs/images/BPBibeDZZokNk6xe0LycsqwXnuc.png)
 1. **在预训练中只用少量视觉 token（如 32/80），大幅加速训练；**
 
 1. **微调阶段再将 token 数扩大（通过调整输入分辨率 + 减小窗口 size）；**
@@ -219,7 +219,7 @@ _**SPViT:**_
 head\ score \times token \ score \ for each \ head
 $$
 来表示
-![image]({{ "images/UeyTbGK3WooyitxO2oMcFFf1nCd.png" | relURL }})
+![image](/blogs/images/UeyTbGK3WooyitxO2oMcFFf1nCd.png)
 1. $$
 MLP_1:LayerNorm \rightarrow Linear(d,d/2) \rightarrow GELU
 $$
@@ -278,7 +278,7 @@ _**HeatViT:**_
 
 ### Hardware 
 硬件主要做了几部分优化：1. 控制流的设计去尽可能多的复用ViT已有的backbone部件；2. 并行化的优化，对于GEMM支持多头的并行处理；3. 优化非线性运算操作；4. LayerNorm是在CPU上做的
-![image]({{ "images/SY4EbGvNooVYiHxdTXNcVt8LnVd.png" | relURL }})
+![image](/blogs/images/SY4EbGvNooVYiHxdTXNcVt8LnVd.png)
 
 ### Limitations / Weakness / Further research 
 HeatViT是用可学习的小型网络来选择prune/keep的token，但缺点就是对于特定的图片，在inference的时候整个网络的focus是固定的，但在VLM中实际的focus必然离不开prompt的语言token部分
@@ -297,11 +297,11 @@ ViTality想用线性注意力，选择采用taylor来近似exp()，理由很简�
 O(n^2) \rightarrow O(n)
 $$
 。
-![image]({{ "images/FxezbG1ZAoCDCwxGO0DcsceKn3c.png" | relURL }})
+![image](/blogs/images/FxezbG1ZAoCDCwxGO0DcsceKn3c.png)
 另外注意：ViTality在训练阶段采用的是Linear+Sparse的形式做训练，后者能起到正则化的作用。但是在推理的时候仅仅考虑Linear的部分，而忽视掉了Sparse部分，定然会有些许的掉点但是考虑到其他因素可以接受。
 ### Hardware
 micro-architecture
-![image]({{ "images/N6ZsbmjUFoLOPLxe5BgcY1s3nqg.png" | relURL }})
+![image](/blogs/images/N6ZsbmjUFoLOPLxe5BgcY1s3nqg.png)
 ####  多块式设计（Chunk-based Design）
 - 不用一个可重构处理阵列去跑所有操作（这样开销大），而是分成多块：
 	- 大阵列（SA-General）：负责大规模矩阵乘法，比如 `QG`、`K̂^T V`。
@@ -335,7 +335,7 @@ micro-architecture
 
 ---
 #### 数据流创新（Down-Forward Accumulation Dataflow）
-![image]({{ "images/JSx0b7dyYoGy5Mx5eBycHMj2nPg.png" | relURL }})
+![image](/blogs/images/JSx0b7dyYoGy5Mx5eBycHMj2nPg.png)
 - 常见两种数据流：
 	Output Stationary：输出留在PE内（内累加）	Input Stationary：输入权重留在PE内（行/列移动，向下累加）
 - ViTALiTy 的选择：
@@ -524,7 +524,7 @@ Sparser Engine 负责剩余的高度稀疏部分；
 ## **FAS-Trans: Fully Exploiting FFN and Attention Sparsity for Transformer on FPGA**
 ---
 ## **FACT: FFN-Attention Co-optimized Transformer Architecture with Eager Correlation Prediction**
-![image]({{ "images/TpsdbnDStoCzBSxZFhhcYIMFnsc.png" | relURL }})
+![image](/blogs/images/TpsdbnDStoCzBSxZFhhcYIMFnsc.png)
 ---
 ### Background & Target
 ---
