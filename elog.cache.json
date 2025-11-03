@@ -1,32 +1,59 @@
 {
   "docs": [
     {
-      "id": "AboNdhopNodjAixCKpbcvb52nHc",
-      "doc_id": "AboNdhopNodjAixCKpbcvb52nHc",
-      "updated": 1762003593000,
+      "id": "EUXndxNsSosVr1xT0sMcVveKn6c",
+      "doc_id": "EUXndxNsSosVr1xT0sMcVveKn6c",
+      "updated": 1762139100000,
       "properties": {
-        "title": "首页",
-        "urlname": "AboNdhopNodjAixCKpbcvb52nHc",
-        "date": "2025-11-01 21:26:33",
-        "updated": "2025-11-01 21:26:33"
+        "title": "PRML-DL",
+        "urlname": "EUXndxNsSosVr1xT0sMcVveKn6c",
+        "date": "2025-11-03 11:04:46",
+        "updated": "2025-11-03 11:05:00"
       },
       "catalog": [],
-      "realName": "首页",
-      "relativePath": "/首页.md",
+      "realName": "PRML-DL",
+      "relativePath": "/PRML-DL.md",
+      "docPath": "./content/posts"
+    },
+    {
+      "id": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
+      "doc_id": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
+      "updated": 1762137620000,
+      "properties": {
+        "title": "VLM pruning : Hw and Alg co-design",
+        "urlname": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
+        "date": "2025-11-03 10:40:03",
+        "updated": "2025-11-03 10:40:20"
+      },
+      "catalog": [],
+      "realName": "VLM pruning ! Hw and Alg co-design",
+      "relativePath": "/VLM pruning ! Hw and Alg co-design.md",
       "docPath": "./content/posts"
     }
   ],
   "catalog": [
     {
-      "doc_id": "AboNdhopNodjAixCKpbcvb52nHc",
-      "id": "AboNdhopNodjAixCKpbcvb52nHc",
-      "title": "首页",
-      "createdAt": 1762003593000,
-      "updated": 1762003593000,
-      "updatedAt": 1762003593000,
+      "doc_id": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
+      "id": "KWxGdZ0MYoL1DdxGokOcFid9nwd",
+      "title": "VLM pruning : Hw and Alg co-design",
+      "createdAt": 1762137603000,
+      "updated": 1762137620000,
+      "updatedAt": 1762137620000,
       "catalog": [],
       "has_child": false,
-      "node_token": "Y4lgw7L9ji5NPmk17bNcuBGDn4e",
+      "node_token": "ITyrwVuBNiwgpckg7HlcSQcXnue",
+      "parent_node_token": ""
+    },
+    {
+      "doc_id": "EUXndxNsSosVr1xT0sMcVveKn6c",
+      "id": "EUXndxNsSosVr1xT0sMcVveKn6c",
+      "title": "PRML-DL",
+      "createdAt": 1762139086000,
+      "updated": 1762139100000,
+      "updatedAt": 1762139100000,
+      "catalog": [],
+      "has_child": false,
+      "node_token": "YlGxwjZOBiccuGk3N6vcbcKfnvq",
       "parent_node_token": ""
     }
   ]
