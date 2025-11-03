@@ -1,4 +1,4 @@
-## Batch Norm
+Batch Norm
 Reference：
 
 https://www.zhihu.com/question/553541499/answer/1892702115723452465
@@ -21,7 +21,7 @@ Batch Normalization（BN）通过对每一层的输入进行标准化（Normaliz
 
 
 ### BN limitation
-![image]({{ "images/HwFPbofd6og0O6xuDjlcoeJhnEc.png" | relURL }})
+![image]({{< relref "images/HwFPbofd6og0O6xuDjlcoeJhnEc.png" >}})
 
 ### LN：Layer Norm
 ![image]({{ "images/WoqIbAeSFocPP6xvN19cda14nfc.png" | relURL }})
