@@ -1,80 +1,75 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>My Feishu Blog</title>
-    <link>http://localhost:1313/feishu-blog/</link>
-    <description>Recent content on My Feishu Blog</description>
-    <generator>Hugo -- 0.150.0</generator>
+    <title>Welcome to Doks on LArielO&#39;s LAB</title>
+    <link>http://localhost:1313/blogs/</link>
+    <description>Recent content in Welcome to Doks on LArielO&#39;s LAB</description>
+    <generator>Hugo</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 01 Nov 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/feishu-blog/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/blogs/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>我的第一篇文章</title>
-      <link>http://localhost:1313/feishu-blog/posts/hello/</link>
+      <title>Example Post</title>
+      <link>http://localhost:1313/blogs/blog/example/</link>
+      <pubDate>Thu, 07 Sep 2023 16:27:22 +0200</pubDate>
+      <guid>http://localhost:1313/blogs/blog/example/</guid>
+      <description>You can use blog posts for announcing product updates and features.</description>
+    </item>
+    <item>
+      <title>Example Guide</title>
+      <link>http://localhost:1313/blogs/docs/guides/example/</link>
+      <pubDate>Thu, 07 Sep 2023 16:04:48 +0200</pubDate>
+      <guid>http://localhost:1313/blogs/docs/guides/example/</guid>
+      <description>&lt;p&gt;Guides lead a user through a specific task they want to accomplish, often with a sequence of steps. Writing a good guide requires thinking about what your users are trying to do.&lt;/p&gt;&#xA;&lt;h2 id=&#34;further-reading&#34;&gt;Further reading&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Read &lt;a href=&#34;https://diataxis.fr/how-to-guides/&#34;&gt;about how-to guides&lt;/a&gt; in the Diátaxis framework&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>Example Reference</title>
+      <link>http://localhost:1313/blogs/docs/reference/example/</link>
+      <pubDate>Thu, 07 Sep 2023 16:13:18 +0200</pubDate>
+      <guid>http://localhost:1313/blogs/docs/reference/example/</guid>
+      <description>&lt;p&gt;Reference pages are ideal for outlining how things work in terse and clear terms. Less concerned with telling a story or addressing a specific use case, they should give a comprehensive outline of what your documenting.&lt;/p&gt;&#xA;&lt;h2 id=&#34;further-reading&#34;&gt;Further reading&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Read &lt;a href=&#34;https://diataxis.fr/reference/&#34;&gt;about reference&lt;/a&gt; in the Diátaxis framework&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>Resources</title>
+      <link>http://localhost:1313/blogs/docs/resources/</link>
+      <pubDate>Tue, 27 Feb 2024 09:30:56 +0100</pubDate>
+      <guid>http://localhost:1313/blogs/docs/resources/</guid>
+      <description>&lt;p&gt;Link to valuable, relevant resources.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/blogs/about/</link>
       <pubDate>Fri, 01 Nov 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/feishu-blog/posts/hello/</guid>
-      <description>&lt;h1 id=&#34;欢迎来到我的博客&#34;&gt;欢迎来到我的博客&lt;/h1&gt;
-&lt;p&gt;这是我用Hugo搭建的第一篇文章！&lt;/p&gt;
-&lt;h2 id=&#34;功能测试&#34;&gt;功能测试&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;支持Markdown&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;粗体文字&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;斜体文字&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://google.com&#34;&gt;链接测试&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;代码块测试&#34;&gt;代码块测试&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;hello&lt;/span&gt;():
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello, Hugo!&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;很期待接下来的写作之旅！&lt;/p&gt;</description>
-      <content:encoded><![CDATA[<h1 id="欢迎来到我的博客">欢迎来到我的博客</h1>
-<p>这是我用Hugo搭建的第一篇文章！</p>
-<h2 id="功能测试">功能测试</h2>
-<ul>
-<li>支持Markdown</li>
-<li><strong>粗体文字</strong></li>
-<li><em>斜体文字</em></li>
-<li><a href="https://google.com">链接测试</a></li>
-</ul>
-<h2 id="代码块测试">代码块测试</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello</span>():
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Hello, Hugo!&#34;</span>)
-</span></span></code></pre></div><p>很期待接下来的写作之旅！</p>
-]]></content:encoded>
+      <guid>http://localhost:1313/blogs/about/</guid>
+      <description>&lt;h1 id=&#34;about-me&#34;&gt;About Me&lt;/h1&gt;&#xA;&lt;p&gt;Welcome to my blog about AI chips design.&lt;/p&gt;&#xA;&lt;h2 id=&#34;contact&#34;&gt;Contact&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;GitHub: &lt;a href=&#34;https://github.com/LArielOzjH&#34;&gt;@LArielOzjH&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>Privacy Policy</title>
+      <link>http://localhost:1313/blogs/privacy/</link>
+      <pubDate>Thu, 07 Sep 2023 17:19:07 +0200</pubDate>
+      <guid>http://localhost:1313/blogs/privacy/</guid>
+      <description></description>
     </item>
     <item>
       <title></title>
-      <link>http://localhost:1313/feishu-blog/posts/%E9%A6%96%E9%A1%B5/</link>
+      <link>http://localhost:1313/blogs/posts/prml-dl/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/feishu-blog/posts/%E9%A6%96%E9%A1%B5/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;在首页你可以对空间进行说明，比如包含以下内容。&lt;/p&gt;&lt;/blockquote&gt;
-&lt;h1 id=&#34;--愿景和目标&#34;&gt;🎯  愿景和目标&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这里你可以描述知识空间建设的目标和意义，有利于团队成员理解目标并朝着目标努力。&lt;/p&gt;&lt;/blockquote&gt;
-&lt;h1 id=&#34;--知识空间简介&#34;&gt;⛳️  知识空间简介&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这里你可以介绍知识空间的主要内容和面向的成员群体。&lt;/p&gt;&lt;/blockquote&gt;
-&lt;h1 id=&#34;--常用文档和链接&#34;&gt;⭐️  常用文档和链接&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这里你可以将需要关注的文档链接粘贴在此处，方便成员快速访问。&lt;/p&gt;&lt;/blockquote&gt;
-&lt;h1 id=&#34;--知识空间帮助&#34;&gt;💡  知识空间帮助&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这里你可以添加知识库使用规范、操作流程、管理员联系方式等。&lt;/p&gt;&lt;/blockquote&gt;</description>
-      <content:encoded><![CDATA[<blockquote>
-<p>在首页你可以对空间进行说明，比如包含以下内容。</p></blockquote>
-<h1 id="--愿景和目标">🎯  愿景和目标</h1>
-<blockquote>
-<p>这里你可以描述知识空间建设的目标和意义，有利于团队成员理解目标并朝着目标努力。</p></blockquote>
-<h1 id="--知识空间简介">⛳️  知识空间简介</h1>
-<blockquote>
-<p>这里你可以介绍知识空间的主要内容和面向的成员群体。</p></blockquote>
-<h1 id="--常用文档和链接">⭐️  常用文档和链接</h1>
-<blockquote>
-<p>这里你可以将需要关注的文档链接粘贴在此处，方便成员快速访问。</p></blockquote>
-<h1 id="--知识空间帮助">💡  知识空间帮助</h1>
-<blockquote>
-<p>这里你可以添加知识库使用规范、操作流程、管理员联系方式等。</p></blockquote>
-]]></content:encoded>
+      <guid>http://localhost:1313/blogs/posts/prml-dl/</guid>
+      <description>&lt;h2 id=&#34;batch-norm&#34;&gt;Batch Norm&lt;/h2&gt;&#xA;&lt;p&gt;Reference：&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://www.zhihu.com/question/553541499/answer/1892702115723452465&#34;&gt;https://www.zhihu.com/question/553541499/answer/1892702115723452465&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/54530247&#34;&gt;https://zhuanlan.zhihu.com/p/54530247&lt;/a&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;ics&#34;&gt;ICS&lt;/h3&gt;&#xA;&lt;p&gt;内部协变量偏移（Internal Covariate Shift, ICS）指神经网络在训练过程中，由于前一层的参数更新导致后续层的输入分布发生显著变化的现象。这种分布的不稳定性会降低训练效率，增加模型收敛的难度。这种现象在深层网络中尤为明显， 是导致训练不稳定、收敛缓慢甚至&lt;a href=&#34;https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1&amp;amp;zhida_source=entity&#34;&gt;梯度消失&lt;/a&gt;/爆炸的原因之一。&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;   ICS发生的主要原因：&#xA;&#xA;    1）网络参数更新导致分布变化；&#xA;&#xA;    2) 非线性激活函数的敏感性问题；[ReLU](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=ReLU&amp;amp;zhida_source=entity)、[Sigmoid](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=Sigmoid&amp;amp;zhida_source=entity)、[Tanh](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=Tanh&amp;amp;zhida_source=entity)等非线性激活函数对不同输入范围的响应不同，如果前一层的输出分布偏移到激活函数的饱和区（如Sigmoid的两端), 梯度会变得极小(梯度消失),  导致训练停滞。&#xA;&#xA;    3）深度网络的累积效应； 即使每一层变化很小，由于多层叠加后， 输入分布的偏移会被放大，导致深层网络的输入分布剧烈波动；&#xA;&#xA;    4）梯度下降的依赖问题； 梯度下降算法假设输入数据的分布是稳定的， 但内部协变量偏移打破了这一假设， 使得优化过程变得不稳定。 由于每一层的输入分布不断变化，优化器需要不断调整学习率， 导致训练收敛变慢。&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;Batch Normalization（BN）通过对每一层的输入进行标准化（Normalization），使得数据分布更加稳定，是解决『内部协变量偏移』的一种有效方式。&lt;/p&gt;&#xA;&lt;h3 id=&#34;bn-limitation&#34;&gt;BN limitation&lt;/h3&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/blogs/images/HwFPbofd6og0O6xuDjlcoeJhnEc.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;lnlayer-norm&#34;&gt;LN：Layer Norm&lt;/h3&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/blogs/images/WoqIbAeSFocPP6xvN19cda14nfc.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# NLP Example&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;batch, sentence_length, embedding_dim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;embedding &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;randn(batch, sentence_length, embedding_dim)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 指定归一化的维度&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;LayerNorm(embedding_dim)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 进行归一化&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm(embedding)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Image Example&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;N, C, H, W &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;randn(N, C, H, W)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Normalize over the last three dimensions (i.e. the channel and spatial dimensions)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# as shown in the image below&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;LayerNorm([C, H, W])&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;output &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; layer_norm(input)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。faster&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/blogs/posts/vlm-pruning--hw-and-alg-co-design/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blogs/posts/vlm-pruning--hw-and-alg-co-design/</guid>
+      <description>&lt;h2 id=&#34;visionzip-longer-is-better-but-not-necessary-in-vision-language-models&#34;&gt;&lt;strong&gt;VisionZip: Longer is Better but Not Necessary in Vision Language Models&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;background&#34;&gt;Background&lt;/h3&gt;&#xA;&lt;h3 id=&#34;algorithm&#34;&gt;Algorithm&lt;/h3&gt;&#xA;&lt;p&gt;此外也是采用了merge，整篇文章没什么突出的算法核心点，但是工程、实验做的很扎实&lt;/p&gt;&#xA;&lt;h2 id=&#34;heading&#34;&gt;&lt;strong&gt;[CLS] Attention is All You Need for Training-Free Visual Token Pruning: Make VLM Inference Faster&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;h2 id=&#34;image&#34;&gt;&lt;img src=&#34;http://localhost:1313/blogs/images/R2UWbLa34oFCItxsmIAcBwchnTc.png&#34; alt=&#34;image&#34;&gt;&lt;/h2&gt;&#xA;&lt;h3 id=&#34;background-analysisand-attention-dispersion&#34;&gt;&lt;strong&gt;Background Analysis：&lt;/strong&gt;&lt;em&gt;**attention shift **&lt;/em&gt;**and **&lt;em&gt;&lt;strong&gt;attention dispersion&lt;/strong&gt;&lt;/em&gt;&lt;/h3&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;em&gt;**Attention shift: **&lt;/em&gt;** a tendency for textual attention to focus more on later parts of the visual token sequence, which is not desirable for preserving valuable visual information.**&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;em&gt;**Attention dispersion:  **&lt;/em&gt;&lt;strong&gt;refers to the less concentrated attention distribution within the LLM compared to the visual encoder.&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>搜索</title>
+      <link>http://localhost:1313/blogs/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blogs/search/</guid>
+      <description></description>
     </item>
   </channel>
 </rss>
