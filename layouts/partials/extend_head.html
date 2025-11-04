@@ -1,0 +1,33 @@
+<!-- 加载字体 - 添加中文字体 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600&family=Noto+Serif+SC:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="/blogs/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/blogs/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/blogs/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/blogs/favicon-16x16.png">
+<link rel="manifest" href="/blogs/site.webmanifest">
+
+<!-- MathJax v3 config：行内 $...$，块级 $$...$$；跳过 code/pre；支持 \(...\), \[...\] -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code'],
+      ignoreHtmlClass: 'tex2jax_ignore',
+      processHtmlClass: 'tex2jax_process'
+    },
+    svg: { fontCache: 'global' }  /* 也可用 'chtml' 渲染：把下面脚本换成 tex-chtml.js */
+  };
+</script>
+
+<!-- 选一个 CDN；国内可试 fastly.jsdelivr 或 unpkg 镜像 -->
+<script defer src="https://fastly.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+

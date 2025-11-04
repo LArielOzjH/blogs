@@ -1,6 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.150.0"><script src="/blogs/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=blogs/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>LArielO&#39;s LAB</title>
+
+<meta name="description" content="Personal Blogs in AI chips design">
+<meta name="author" content="LArielO">
+<link rel="canonical" href="http://localhost:1313/blogs/">
+<link crossorigin="anonymous" href="/blogs/assets/css/stylesheet.css" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/blogs/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/blogs/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/blogs/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/blogs/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/blogs/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/blogs/index.xml" title="rss">
+<link rel="alternate" type="application/json" href="http://localhost:1313/blogs/index.json" title="json">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/blogs/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600&family=Noto+Serif+SC:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 
+<link rel="icon" type="image/x-icon" href="/blogs/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/blogs/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/blogs/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/blogs/favicon-16x16.png">
+<link rel="manifest" href="/blogs/site.webmanifest">
 
 
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code'],
+      ignoreHtmlClass: 'tex2jax_ignore',
+      processHtmlClass: 'tex2jax_process'
+    },
+    svg: { fontCache: 'global' }   
+  };
+</script>
 
-<script src="/blogs/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=blogs/livereload" data-no-instant defer></script>
+
+<script defer src="https://fastly.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/blogs/" accesskey="h" title="LArielO&#39;s LAB (Alt + H)">
+                <img src="http://localhost:1313/blogs/android-chrome-512x512.png" alt="" aria-label="logo"
+                    height="28">LArielO&#39;s LAB</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/blogs/" title="Main">
+                    <span class="active">Main</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blogs/archive/" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blogs/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blogs/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<article class="first-entry home-info">
+    <header class="entry-header">
+        <h1>👋 This is LArielO&rsquo;s Lab</h1>
+    </header>
+    <div class="entry-content">
+        <p>Welcome! Here I share knowledge about <strong>AI Chips</strong> design, including but not limited to:</p>
+<ul>
+<li>Real-World Processing-In-Memory</li>
+<li>Large Multimodal Model Accelerator</li>
+<li>VLA &amp; VLN</li>
+</ul>
+<p>Based on the number of grammar mistakes in my posts, you can tell how much ChatGPT is involved🫨</p>
+
+    </div>
+    <footer class="entry-footer">
+        <div class="social-icons" >
+    <a href="https://github.com/LArielOzjH" target="_blank" rel="noopener noreferrer me"
+        title="Github">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+    </a>
+    <a href="https://open.spotify.com/user/31u2bkl5yabaqnehjxcmgzyqhzzm" target="_blank" rel="noopener noreferrer me"
+        title="Spotify">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <path
+        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+</svg>
+    </a>
+    <a href="https://qm.qq.com/q/9US0bnBiWQ" target="_blank" rel="noopener noreferrer me"
+        title="Qq">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+    </a>
+    <a href="https://www.kaggle.com/larielo" target="_blank" rel="noopener noreferrer me"
+        title="Kaggle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" stroke="none">
+    <path transform="matrix(.527027 0 0 .527027 -30.632288 -22.45559)" clip-path="url(#A)"
+        d="M105.75 102.968c-.06.238-.298.357-.713.357H97.1c-.477 0-.89-.208-1.248-.625L82.746 86.028l-3.655 3.477v12.93c0 .595-.298.892-.892.892h-6.152c-.595 0-.892-.297-.892-.892V43.5c0-.593.297-.89.892-.89H78.2c.594 0 .892.298.892.89v36.288l15.692-15.87c.416-.415.832-.624 1.248-.624h8.204c.356 0 .593.15.713.445.12.357.09.624-.09.803L88.274 80.588l17.297 21.488c.237.238.297.535.18.892" />
+</svg>
+    </a>
+    <a href="/blogs/index.xml" target="_blank" rel="noopener noreferrer me"
+        title="Rss">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 11a9 9 0 0 1 9 9" />
+    <path d="M4 4a16 16 0 0 1 16 16" />
+    <circle cx="5" cy="19" r="1" />
+</svg>
+    </a>
+</div>
+
+    </footer>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Format
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>H1 H2 H3 H4 H5 H6 Number 1
+Number 2
+Bullet 1
+Bullet 2
+module adder( input a, input b, output reg c) assign c = a &#43; b; endmodule This is a quote
+$$ C generation \times \dot B $$
+English is a West Germanic language that emerged in early medieval England and has since become a global lingua franca.([4])([5])([6]) The namesake of the language is the Angles, one of the Germanic peoples who migrated to Britain after the end of Roman rule. English is the most spoken language in the world, primarily due to the global influences of the former British Empire (succeeded by the Commonwealth of Nations) and the United States. It is the most widely learned second language in the world, with more second-language speakers than native speakers. However, English is only the third-most spoken native language, after Mandarin Chinese and Spanish.([3])
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-04 10:40:12 +0000 UTC'>November 4, 2025</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>153 words</span>&nbsp;·&nbsp;<span>LArielO</span></footer>
+  <a class="entry-link" aria-label="post link to Format" href="http://localhost:1313/blogs/posts/format/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">PRML-DL
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Batch Norm Reference：
+https://www.zhihu.com/question/553541499/answer/1892702115723452465
+https://zhuanlan.zhihu.com/p/54530247
+ICS 内部协变量偏移（Internal Covariate Shift, ICS）指神经网络在训练过程中，由于前一层的参数更新导致后续层的输入分布发生显著变化的现象。这种分布的不稳定性会降低训练效率，增加模型收敛的难度。这种现象在深层网络中尤为明显， 是导致训练不稳定、收敛缓慢甚至梯度消失/爆炸的原因之一。
+ICS发生的主要原因： 1）网络参数更新导致分布变化； 2) 非线性激活函数的敏感性问题；[ReLU](https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=ReLU&amp;zhida_source=entity)、[Sigmoid](https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=Sigmoid&amp;zhida_source=entity)、[Tanh](https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=Tanh&amp;zhida_source=entity)等非线性激活函数对不同输入范围的响应不同，如果前一层的输出分布偏移到激活函数的饱和区（如Sigmoid的两端), 梯度会变得极小(梯度消失), 导致训练停滞。 3）深度网络的累积效应； 即使每一层变化很小，由于多层叠加后， 输入分布的偏移会被放大，导致深层网络的输入分布剧烈波动； 4）梯度下降的依赖问题； 梯度下降算法假设输入数据的分布是稳定的， 但内部协变量偏移打破了这一假设， 使得优化过程变得不稳定。 由于每一层的输入分布不断变化，优化器需要不断调整学习率， 导致训练收敛变慢。 Batch Normalization（BN）通过对每一层的输入进行标准化（Normalization），使得数据分布更加稳定，是解决『内部协变量偏移』的一种有效方式。
+BN limitation LN：Layer Norm # NLP Example batch, sentence_length, embedding_dim = 20, 5, 10 embedding = torch.randn(batch, sentence_length, embedding_dim) # 指定归一化的维度 layer_norm = nn.LayerNorm(embedding_dim) # 进行归一化 layer_norm(embedding) # Image Example N, C, H, W = 20, 5, 10, 10 input = torch.randn(N, C, H, W) # Normalize over the last three dimensions (i.e. the channel and spatial dimensions) # as shown in the image below layer_norm = nn.LayerNorm([C, H, W]) output = layer_norm(input) RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。faster
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-03 11:04:46 +0000 UTC'>November 3, 2025</span>&nbsp;·&nbsp;<span>8 min</span>&nbsp;·&nbsp;<span>1536 words</span>&nbsp;·&nbsp;<span>LArielO</span></footer>
+  <a class="entry-link" aria-label="post link to PRML-DL" href="http://localhost:1313/blogs/posts/prml-dl/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">VLM pruning : Hw and Alg co-design
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>VisionZip: Longer is Better but Not Necessary in Vision Language Models Background Algorithm 此外也是采用了merge，整篇文章没什么突出的算法核心点，但是工程、实验做的很扎实
+[CLS] Attention is All You Need for Training-Free Visual Token Pruning: Make VLM Inference Faster Background Analysis：**attention shift ****and **attention dispersion **Attention shift: **** a tendency for textual attention to focus more on later parts of the visual token sequence, which is not desirable for preserving valuable visual information.**
+**Attention dispersion: **refers to the less concentrated attention distribution within the LLM compared to the visual encoder.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-03 10:40:03 +0000 UTC'>November 3, 2025</span>&nbsp;·&nbsp;<span>12 min</span>&nbsp;·&nbsp;<span>2454 words</span>&nbsp;·&nbsp;<span>LArielO</span></footer>
+  <a class="entry-link" aria-label="post link to VLM pruning : Hw and Alg co-design" href="http://localhost:1313/blogs/posts/vlm-pruning--hw-and-alg-co-design/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/blogs/">LArielO&#39;s LAB</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

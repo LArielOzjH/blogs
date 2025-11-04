@@ -1,0 +1,42 @@
+{{ define "main" }}
+<main class="main">
+  <article class="archive">
+    <h1 class="archive__title">Archive</h1>
+
+    {{/* 只取有日期的文章页；并可限定在 mainSections */}}
+    {{ $all := .Site.RegularPages }}
+    {{ with site.Params.mainSections }}
+      {{ $all = where $all "Type" "in" . }}
+    {{ end }}
+    {{ $all = where $all "Date.Unix" ">" 0 }}
+
+    {{ range $year := ($all.ByDate.Reverse).GroupByDate "2006" }}
+      <section class="archive__year">
+        <h2 class="archive__year-title">
+          {{ $year.Key }} <sup class="archive__count">{{ len $year.Pages }}</sup>
+        </h2>
+        <hr class="archive__divider"/>
+
+        {{ range $month := $year.Pages.GroupByDate "January" }}
+          <div class="archive__row">
+            <div class="archive__month">{{ $month.Key }}</div>
+            <ul class="archive__list">
+              {{ range $post := $month.Pages.ByDate.Reverse }}
+                <li class="archive__item">
+                  <a class="archive__link" href="{{ $post.RelPermalink }}">{{ $post.Title }}</a>
+                  <div class="archive__meta">
+                    {{ $post.Date.Format "Jan 2, 2006" }}
+                    {{ with $post.Params.author }} · Author: {{ . }}{{ end }}
+                    {{ with $post.ReadingTime }} · Estimated Reading: {{ . }} min{{ end }}
+                  </div>
+                </li>
+              {{ end }}
+            </ul>
+          </div>
+        {{ end }}
+      </section>
+    {{ end }}
+  </article>
+</main>
+{{ end }}
+

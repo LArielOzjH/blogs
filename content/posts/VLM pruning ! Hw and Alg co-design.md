@@ -1,3 +1,7 @@
+---
+title: 'VLM pruning : Hw and Alg co-design'
+date: '2025-11-03 10:40:03'
+---
 ## **VisionZip: Longer is Better but Not Necessary in Vision Language Models**
 ---
 ### Background

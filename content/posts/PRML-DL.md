@@ -1,3 +1,7 @@
+---
+title: PRML-DL
+date: '2025-11-03 11:04:46'
+---
 ## Batch Norm
 Reference：
 
@@ -43,7 +47,7 @@ layer_norm = nn.LayerNorm([C, H, W])
 output = layer_norm(input)
 ```
 RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。faster
-#### 1. 稳定训练，防止梯度爆炸/消失
+#### 稳定训练，防止梯度爆炸/消失
 - 深层网络中每一层输出的尺度会不断变化，容易导致：
 	- 梯度爆炸（数值变得特别大）
 		- 梯度消失（数值趋近于0）
@@ -51,8 +55,10 @@ RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。fast
 - RMSNorm 通过统一每个 token 向量的“长度”，让每层的输出保持在稳定范围内。
 
 类比：像做体操前“先把身体拉开”，让后续动作更安全、流畅。
+
+
 ---
-#### 2. 加快收敛，提升训练速度
+#### 加快收敛，提升训练速度
 - 归一化后每层的输入分布更“标准”，优化器收敛更快；
 
 - 在不需要预热很长时间的情况下就能达到稳定训练效果；
@@ -60,8 +66,10 @@ RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。fast
 - RMSNorm 的实现更简单，计算量小于 LayerNorm，对硬件友好。
 
 类比：就像跑步前热身，让你跑得更快、避免受伤。
+
+
 ---
-#### 3. 提升模型泛化能力
+#### 提升模型泛化能力
 - 归一化后，模型不会偏向某些维度/特征；
 
 - 输出分布在各维度上更均匀，有助于模型在验证集、测试集上表现更好。
@@ -111,6 +119,8 @@ def rope_rotation(x, position, dim):
 RoPE在实现上是绝对位置编码，但结合基于内积的Attention来用时，内积之后位置会自动作差，（想象两个向量做内积只跟夹角有关，一个意思）从而实现了相对位置编码的效果。可同一大小的向量可以作差，不同大小的向量怎么作差呢？这就是多模态位置编码的困难所在。
 
 不少工作选择“逃避”这个困难，直接Flatten所有模态然后使用RoPE-1D，这不失为一种解决办法，但终究显得不够优雅。此外，强行Flatten也可能会降低模型性能的天花板，因为[《VisionLLaMA: A Unified LLaMA Backbone for Vision Tasks》](https://papers.cool/arxiv/2403.00522)等工作已经表明，RoPE-2D的引入有助于提升模型效果尤其是变分辨率输入的效果。
+
+
 ![image](/blogs/images/RxRzbjNHuooidzx93ZAcftCVnrf.png)
 ---
 ## CLS token
@@ -433,8 +443,12 @@ Reference:
 https://zhuanlan.zhihu.com/p/699623105
 
 https://arxiv.org/pdf/2305.10355
+
+
 ![image](/blogs/images/XUZubPm4KoCUj9xRvbZcvnBfnqe.png)
- a more suitable method for the stable, fair and flexible object hallucination evaluation of LVLMs, namely pollingbased object probing evaluation (POPE). Specifically, POPE formulates the evaluation of object hallucination as a binary classification task that prompts LVLMs to output “Yes” or “No”, e.g., “Is there a chair in the image?”. In this way, by sampling objects that LVLMs are prone to hallucinate, we can construct a set of hard questions to poll LVLMs. As standard answers to these questions are just “Yes” or “No”, we can easily identify them without complex parsing rules, and avoid the influence of instruction designs and caption length, thus guaranteeing stability, fairness and flexibility
+ 
+
+a more suitable method for the stable, fair and flexible object hallucination evaluation of LVLMs, namely pollingbased object probing evaluation (POPE). Specifically, POPE formulates the evaluation of object hallucination as a binary classification task that prompts LVLMs to output “Yes” or “No”, e.g., “Is there a chair in the image?”. In this way, by sampling objects that LVLMs are prone to hallucinate, we can construct a set of hard questions to poll LVLMs. As standard answers to these questions are just “Yes” or “No”, we can easily identify them without complex parsing rules, and avoid the influence of instruction designs and caption length, thus guaranteeing stability, fairness and flexibility
 ## KV cache
 ## GGML
 Reference:
@@ -457,7 +471,11 @@ llama_graph_compute(graph)
 
 ## Low-rank Attention
 
+
 Nadaraya–Watson Regression（纳达拉亚–沃森回归）是一种非常经典的非参数回归方法，本质上是加权平均法，用于拟合数据的平滑曲线，尤其常见于**核回归（kernel regression）**和一些深度学习中的可解释性模块。
+
+
+![image](/blogs/images/DKvobAtYpoNmvfxOtAFc3xW7nif.png)
 ---
 ### Maths explanation
 假设我们有一组训练样本 (xi,yi)(x_i, y_i)，现在想预测一个新点 xx 的函数值 y(x)y(x)，Nadaraya–Watson 回归形式为：
@@ -474,12 +492,15 @@ $$
 
 - hh：称为带宽参数（bandwidth），控制“邻近范围”大小。
 
+
 ---
 **Nadaraya–Watson 回归 = 用邻近样本的加权平均来平滑预测结果，是核方法的基础形式，类似软注意力机制。**
 
 ---
 ## Cover's theme
 https://kexue.fm/archives/7546
+
+
 ---
 ## GPU storage
 https://zhuanlan.zhihu.com/p/29264672961
@@ -487,6 +508,8 @@ https://zhuanlan.zhihu.com/p/29264672961
 https://zhuanlan.zhihu.com/p/462191421
 
 https://github.com/CalvinXKY/BasicCUDA/tree/master/memory_opt
+
+
 ---
 ## pip install
 在使用 `pip install` 命令时，“后缀 option（-...）”实际上是指 命令行选项（command-line options），它们以 `-` 或 `--` 开头，用于控制 `pip install` 的行为。这些选项可以改变安装方式、指定源、启用特定功能等。

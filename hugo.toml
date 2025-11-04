@@ -2,31 +2,85 @@ baseURL = 'https://LArielOzjH.github.io/blogs/'
 languageCode = 'zh-cn'
 title = "LArielO's LAB"
 theme = 'PaperMod'
-
 enableEmoji = true
+math = true
+buildFuture = true
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+[markup.goldmark]
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.goldmark.parser]
+    attribute = true
 
 [params]
 author = 'LArielO'
 description = "Personal Blogs in AI chips design"
-ShowReadingTime = true
-ShowShareButtons = true
-ShowPostNavLinks = true
+defaultTheme = "auto"
+disableThemeToggle = false
 ShowBreadCrumbs = true
-ShowCodeCopyButtons = true
+ShowPostNavLinks = true
 ShowWordCount = true
+ShowReadingTime = true
+ShowCodeCopyButtons = true
+ShowShareButtons = true
 ShowFullTextinRSS = true
+ShowSearchPage = true
+
+
+# 添加这部分 - 在 head 中注入字体
+[params.assets]
+disableFingerprinting = true
+
+[[params.rawHTML]]
+enable = true
+
 
 [params.homeInfoParams]
-Title = "Welcome to LArielO's Blog!"
-Content = "for AI chips design"
+Title = "👋 This is LArielO's Lab"
+Content = """
+Welcome! Here I share knowledge about **AI Chips** design, including but not limited to:
 
-ShowSearchPage = true
+
+- Real-World Processing-In-Memory  
+- Large Multimodal Model Accelerator  
+- VLA & VLN  
+
+Based on the number of grammar mistakes in my posts, you can tell how much ChatGPT is involved🫨
+"""
+
+[[params.socialIcons]]
+name = "github"
+url = "https://github.com/LArielOzjH"
+
+[[params.socialIcons]]
+name = "spotify"
+url = "https://open.spotify.com/user/31u2bkl5yabaqnehjxcmgzyqhzzm"
+
+[[params.socialIcons]]
+name = "qq"
+url = "https://qm.qq.com/q/9US0bnBiWQ"  
+
+[[params.socialIcons]]
+name = "kaggle"
+url = "https://www.kaggle.com/larielo"
+
+[[params.socialIcons]]
+name = "rss"
+url = "/blogs/index.xml"
 
 [menu]
 [[menu.main]]
 name = "Main"
 url = "/"
 weight = 10
+
+[[menu.main]]
+identifier = "archive"
+name = "Archive"
+url = "/archive/"
+weight = 20
 
 [[menu.main]]
 name = "Posts"
@@ -38,10 +92,7 @@ name = "Tags"
 url = "/tags/"
 weight = 30
 
-[[menu.main]]
-name = "About"
-url = "/about/"
-weight = 40
-
-[outputs]
-home = ["HTML", "RSS", "JSON"]
+[params.label]
+text = "LArielO's LAB"
+icon = "/blogs/android-chrome-512x512.png" 
+iconHeight = 28  

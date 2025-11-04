@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
-  <sitemap>
-    <loc>http://localhost:1313/blogs/en/sitemap.xml</loc>
-    
-      <lastmod>2024-11-01T00:00:00+00:00</lastmod>
-    
-  </sitemap>
-  
-  <sitemap>
-    <loc>http://localhost:1313/blogs/de/sitemap.xml</loc>
-    
-  </sitemap>
-  
-  <sitemap>
-    <loc>http://localhost:1313/blogs/nl/sitemap.xml</loc>
-    
-  </sitemap>
-  
-</sitemapindex>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>http://localhost:1313/blogs/posts/format/</loc>
+    <lastmod>2025-11-04T10:40:12+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blogs/</loc>
+    <lastmod>2025-11-04T10:40:12+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blogs/posts/</loc>
+    <lastmod>2025-11-04T10:40:12+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blogs/posts/prml-dl/</loc>
+    <lastmod>2025-11-03T11:04:46+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blogs/posts/vlm-pruning--hw-and-alg-co-design/</loc>
+    <lastmod>2025-11-03T10:40:03+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blogs/about/</loc>
+    <lastmod>2024-11-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blogs/archive/</loc>
+  </url><url>
+    <loc>http://localhost:1313/blogs/categories/</loc>
+  </url><url>
+    <loc>http://localhost:1313/blogs/tags/</loc>
+  </url><url>
+    <loc>http://localhost:1313/blogs/search/</loc>
+  </url>
+</urlset>

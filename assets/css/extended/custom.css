@@ -1,0 +1,175 @@
+.home-info ul {
+  list-style-type: disc !important;
+  margin-left: 1.5rem;
+}
+
+.home-info li {
+  margin-bottom: 0.3rem;
+}
+
+/* 直接定义字体变量 - 添加中文 SC */
+:root {
+  --font-serif: 'Noto Serif', 'Noto Serif SC', serif;
+  --font-mono: 'Menlo', 'IBM Plex Mono', 'Noto Sans Mono CJK SC', monospace;
+}
+/* 全局应用 Noto Serif */
+body {
+  font-family: var(--font-serif) !important;
+}
+
+/* Logo 使用 SemiBold (600) */
+.logo,
+.logo a,
+#site-title,
+header .logo {
+  font-family: var(--font-serif) !important;
+  font-weight: 600 !important;
+}
+
+/* 标题使用 SemiBold (600) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif) !important;
+  font-weight: 600 !important;
+}
+
+/* 正文使用 Regular (400) */
+p, a, li, span, div {
+  font-family: var(--font-serif) !important;
+  font-weight: 400 !important;
+}
+
+.post-content pre,
+.post-content code,
+.post-content pre *,
+.post-content code * {
+  font-family: Menlo, "Noto Serif", "Noto Serif SC", serif !important;
+  font-variant-ligatures: none;
+}
+
+/* 文章标题 */
+.post-title,
+.entry-title {
+  font-weight: 600 !important;
+}
+
+/* 导航菜单也用 SemiBold */
+#menu a {
+  font-weight: 600 !important;
+}
+/* 容器与标题 */
+.archive { max-width: 860px; margin: 0 auto; padding: 2rem 1rem; }
+.archive__title { font-size: 2.4rem; font-weight: 800; margin: 0 0 1.2rem; }
+
+/* 年份行 */
+.archive__year { margin: 2.2rem 0 1.6rem; }
+.archive__year-title { font-size: 1.6rem; font-weight: 800; margin: 0; }
+.archive__count { font-size: .8rem; color: var(--secondary); vertical-align: super; }
+.archive__divider { border: 0; border-top: 1px solid var(--border); margin: .6rem 0 1.2rem; }
+
+/* 月份 + 列表为两列布局：左侧月名，右侧文章 */
+.archive__row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  align-items: start;
+  margin: 1rem 0 1.4rem;
+}
+.archive__month {
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+/* 列表与条目 */
+.archive__list { list-style: none; padding: 0; margin: 0; }
+.archive__item { margin: .6rem 0 1rem; }
+.archive__link {
+  font-size: 1.08rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.archive__link:hover { border-bottom-color: currentColor; }
+.archive__meta { color: var(--secondary); font-size: .92rem; margin-top: .15rem; }
+
+/* 小屏回落为单列 */
+@media (max-width: 640px) {
+  .archive__row { grid-template-columns: 1fr; }
+  .archive__month { margin-bottom: .4rem; }
+}
+
+.post-content p {
+  text-indent: 2em;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  line-height: 1.8;
+}
+
+ul p,
+ol p {
+  text-indent: 0 !important;
+  margin-left: 0 !important;
+}
+
+
+/* 只给正文区域编号，避免侧边栏/卡片等被影响 */
+.post-content { counter-reset: h2counter; }
+
+.post-content h2 {
+  counter-reset: h3counter;
+  counter-increment: h2counter;
+}
+.post-content h3 {
+  counter-reset: h4counter;
+  counter-increment: h3counter;
+}
+.post-content h4 {
+  counter-increment: h4counter;
+}
+
+/* 前缀：2, 2.3, 2.3.1 */
+.post-content h2::before {
+  content: counter(h2counter) ". ";
+  color: var(--primary);
+  font-weight: 700;
+}
+.post-content h3::before {
+  content: counter(h2counter) "." counter(h3counter) " ";
+  color: var(--primary);
+  font-weight: 600;
+}
+.post-content h4::before {
+  content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) " ";
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+
+
+/* TOC 的有序列表恢复数字标号 */
+.toc ol {
+  list-style: decimal !important;
+  margin-left: 1rem;
+  padding-left: .25rem;
+}
+.toc li {
+  margin: .25rem 0;
+}
+
+/*（可选）让子层级也有数字，而不是圆点 */
+.toc ol ol { list-style: decimal; }
+
+/* 让代码块变成圆角，去掉多余背景 */
+.post-content pre,
+.post-content .highlight,
+pre {
+  border-radius: 10px !important;   /* 圆角 */
+  background: none !important;      /* 不叠背景 */
+  overflow: auto;
+}
+
+/* 代码内容保持当前背景，只柔化边缘 */
+.post-content pre code,
+.post-content code {
+  border-radius: 8px !important;    /* 轻微圆角 */
+}
+

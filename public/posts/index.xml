@@ -1,25 +1,1564 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on LArielO&#39;s LAB</title>
     <link>http://localhost:1313/blogs/posts/</link>
     <description>Recent content in Posts on LArielO&#39;s LAB</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- 0.150.0</generator>
     <language>zh-cn</language>
+    <lastBuildDate>Tue, 04 Nov 2025 10:40:12 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/blogs/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title></title>
-      <link>http://localhost:1313/blogs/posts/prml-dl/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/blogs/posts/prml-dl/</guid>
-      <description>&lt;h2 id=&#34;batch-norm&#34;&gt;Batch Norm&lt;/h2&gt;&#xA;&lt;p&gt;Reference：&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://www.zhihu.com/question/553541499/answer/1892702115723452465&#34;&gt;https://www.zhihu.com/question/553541499/answer/1892702115723452465&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/54530247&#34;&gt;https://zhuanlan.zhihu.com/p/54530247&lt;/a&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;ics&#34;&gt;ICS&lt;/h3&gt;&#xA;&lt;p&gt;内部协变量偏移（Internal Covariate Shift, ICS）指神经网络在训练过程中，由于前一层的参数更新导致后续层的输入分布发生显著变化的现象。这种分布的不稳定性会降低训练效率，增加模型收敛的难度。这种现象在深层网络中尤为明显， 是导致训练不稳定、收敛缓慢甚至&lt;a href=&#34;https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1&amp;amp;zhida_source=entity&#34;&gt;梯度消失&lt;/a&gt;/爆炸的原因之一。&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code&gt;   ICS发生的主要原因：&#xA;&#xA;    1）网络参数更新导致分布变化；&#xA;&#xA;    2) 非线性激活函数的敏感性问题；[ReLU](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=ReLU&amp;amp;zhida_source=entity)、[Sigmoid](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=Sigmoid&amp;amp;zhida_source=entity)、[Tanh](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=Tanh&amp;amp;zhida_source=entity)等非线性激活函数对不同输入范围的响应不同，如果前一层的输出分布偏移到激活函数的饱和区（如Sigmoid的两端), 梯度会变得极小(梯度消失),  导致训练停滞。&#xA;&#xA;    3）深度网络的累积效应； 即使每一层变化很小，由于多层叠加后， 输入分布的偏移会被放大，导致深层网络的输入分布剧烈波动；&#xA;&#xA;    4）梯度下降的依赖问题； 梯度下降算法假设输入数据的分布是稳定的， 但内部协变量偏移打破了这一假设， 使得优化过程变得不稳定。 由于每一层的输入分布不断变化，优化器需要不断调整学习率， 导致训练收敛变慢。&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;p&gt;Batch Normalization（BN）通过对每一层的输入进行标准化（Normalization），使得数据分布更加稳定，是解决『内部协变量偏移』的一种有效方式。&lt;/p&gt;&#xA;&lt;h3 id=&#34;bn-limitation&#34;&gt;BN limitation&lt;/h3&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/blogs/images/HwFPbofd6og0O6xuDjlcoeJhnEc.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;&#xA;&lt;h3 id=&#34;lnlayer-norm&#34;&gt;LN：Layer Norm&lt;/h3&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/blogs/images/WoqIbAeSFocPP6xvN19cda14nfc.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# NLP Example&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;batch, sentence_length, embedding_dim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;embedding &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;randn(batch, sentence_length, embedding_dim)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 指定归一化的维度&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;LayerNorm(embedding_dim)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 进行归一化&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm(embedding)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Image Example&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;N, C, H, W &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;randn(N, C, H, W)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Normalize over the last three dimensions (i.e. the channel and spatial dimensions)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# as shown in the image below&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;LayerNorm([C, H, W])&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;output &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; layer_norm(input)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。faster&lt;/p&gt;</description>
+      <title>Format</title>
+      <link>http://localhost:1313/blogs/posts/format/</link>
+      <pubDate>Tue, 04 Nov 2025 10:40:12 +0000</pubDate>
+      <guid>http://localhost:1313/blogs/posts/format/</guid>
+      <description>&lt;h1 id=&#34;h1&#34;&gt;H1&lt;/h1&gt;
+&lt;h2 id=&#34;h2&#34;&gt;H2&lt;/h2&gt;
+&lt;h3 id=&#34;h3&#34;&gt;H3&lt;/h3&gt;
+&lt;h4 id=&#34;h4&#34;&gt;H4&lt;/h4&gt;
+&lt;h5 id=&#34;h5&#34;&gt;H5&lt;/h5&gt;
+&lt;h6 id=&#34;h6&#34;&gt;H6&lt;/h6&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Number 1&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Number 2&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Bullet 1&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Bullet 2&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-undefined&#34; data-lang=&#34;undefined&#34;&gt;module adder(
+    input a,
+    input b,
+    output reg c)
+    
+    assign c = a + b;
+endmodule
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This is a quote&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;$$
+C generation \times \dot B
+$$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;English&lt;/strong&gt; is a &lt;a href=&#34;https://en.wikipedia.org/wiki/West_Germanic_language&#34;&gt;West Germanic language&lt;/a&gt; that emerged in &lt;a href=&#34;https://en.wikipedia.org/wiki/Early_medieval_England&#34;&gt;early medieval England&lt;/a&gt; and has since become a global &lt;a href=&#34;https://en.wikipedia.org/wiki/Lingua_franca&#34;&gt;lingua franca&lt;/a&gt;.([4])([5])([6]) The namesake of the language is the &lt;a href=&#34;https://en.wikipedia.org/wiki/Angles_(tribe)&#34;&gt;Angles&lt;/a&gt;, one of the &lt;a href=&#34;https://en.wikipedia.org/wiki/Germanic_peoples&#34;&gt;Germanic peoples&lt;/a&gt; who &lt;a href=&#34;https://en.wikipedia.org/wiki/Anglo-Saxon_settlement_of_Britain&#34;&gt;migrated to Britain&lt;/a&gt; after the &lt;a href=&#34;https://en.wikipedia.org/wiki/End_of_Roman_rule_in_Britain&#34;&gt;end of Roman rule&lt;/a&gt;. English is the &lt;a href=&#34;https://en.wikipedia.org/wiki/Most_spoken_language&#34;&gt;most spoken language&lt;/a&gt; in the world, primarily due to the global influences of the former &lt;a href=&#34;https://en.wikipedia.org/wiki/British_Empire&#34;&gt;British Empire&lt;/a&gt; (succeeded by the &lt;a href=&#34;https://en.wikipedia.org/wiki/Commonwealth_of_Nations&#34;&gt;Commonwealth of Nations&lt;/a&gt;) and the &lt;a href=&#34;https://en.wikipedia.org/wiki/United_States&#34;&gt;United States&lt;/a&gt;. It is the most widely learned &lt;a href=&#34;https://en.wikipedia.org/wiki/Second_language&#34;&gt;second language&lt;/a&gt; in the world, with more second-language speakers than native speakers. However, English is only the &lt;a href=&#34;https://en.wikipedia.org/wiki/List_of_languages_by_number_of_native_speakers&#34;&gt;third-most spoken native language&lt;/a&gt;, after &lt;a href=&#34;https://en.wikipedia.org/wiki/Mandarin_Chinese&#34;&gt;Mandarin Chinese&lt;/a&gt; and &lt;a href=&#34;https://en.wikipedia.org/wiki/Spanish_language&#34;&gt;Spanish&lt;/a&gt;.([3])&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<h1 id="h1">H1</h1>
+<h2 id="h2">H2</h2>
+<h3 id="h3">H3</h3>
+<h4 id="h4">H4</h4>
+<h5 id="h5">H5</h5>
+<h6 id="h6">H6</h6>
+<ol>
+<li>
+<p>Number 1</p>
+</li>
+<li>
+<p>Number 2</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>Bullet 1</p>
+</li>
+<li>
+<p>Bullet 2</p>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-undefined" data-lang="undefined">module adder(
+    input a,
+    input b,
+    output reg c)
+    
+    assign c = a + b;
+endmodule
+</code></pre><hr>
+<blockquote>
+<p>This is a quote</p></blockquote>
+<p>$$
+C generation \times \dot B
+$$</p>
+<p><strong>English</strong> is a <a href="https://en.wikipedia.org/wiki/West_Germanic_language">West Germanic language</a> that emerged in <a href="https://en.wikipedia.org/wiki/Early_medieval_England">early medieval England</a> and has since become a global <a href="https://en.wikipedia.org/wiki/Lingua_franca">lingua franca</a>.([4])([5])([6]) The namesake of the language is the <a href="https://en.wikipedia.org/wiki/Angles_(tribe)">Angles</a>, one of the <a href="https://en.wikipedia.org/wiki/Germanic_peoples">Germanic peoples</a> who <a href="https://en.wikipedia.org/wiki/Anglo-Saxon_settlement_of_Britain">migrated to Britain</a> after the <a href="https://en.wikipedia.org/wiki/End_of_Roman_rule_in_Britain">end of Roman rule</a>. English is the <a href="https://en.wikipedia.org/wiki/Most_spoken_language">most spoken language</a> in the world, primarily due to the global influences of the former <a href="https://en.wikipedia.org/wiki/British_Empire">British Empire</a> (succeeded by the <a href="https://en.wikipedia.org/wiki/Commonwealth_of_Nations">Commonwealth of Nations</a>) and the <a href="https://en.wikipedia.org/wiki/United_States">United States</a>. It is the most widely learned <a href="https://en.wikipedia.org/wiki/Second_language">second language</a> in the world, with more second-language speakers than native speakers. However, English is only the <a href="https://en.wikipedia.org/wiki/List_of_languages_by_number_of_native_speakers">third-most spoken native language</a>, after <a href="https://en.wikipedia.org/wiki/Mandarin_Chinese">Mandarin Chinese</a> and <a href="https://en.wikipedia.org/wiki/Spanish_language">Spanish</a>.([3])</p>
+<p><strong>英语</strong>（英语：English）是目前全球使用最广、最具影响力的<a href="https://zh.wikipedia.org/wiki/%E9%80%9A%E7%94%A8%E8%AA%9E">通用语</a>，属<a href="https://zh.wikipedia.org/wiki/%E8%A5%BF%E6%97%A5%E8%80%B3%E6%9B%BC%E8%AA%9E%E6%94%AF">西日耳曼语支</a>，源自<a href="https://zh.wikipedia.org/wiki/%E7%9B%8E%E6%A0%BC%E9%B2%81-%E6%92%92%E5%85%8B%E9%80%8A%E8%8B%B1%E6%A0%BC%E5%85%B0">中世纪早期的英格兰</a>。英语是世界上<a href="https://zh.wikipedia.org/wiki/%E4%BB%A5%E6%AF%8D%E8%AA%9E%E4%BA%BA%E5%8F%A3%E6%8E%92%E5%BA%8F%E7%9A%84%E8%AA%9E%E8%A8%80%E5%88%97%E8%A1%A8">母语人口第三多的语言</a>（仅次于<a href="https://zh.wikipedia.org/wiki/%E6%BC%A2%E8%AA%9E">汉语</a>和<a href="https://zh.wikipedia.org/wiki/%E8%A5%BF%E7%8F%AD%E7%89%99%E8%AA%9E">西班牙语</a>([4])），有<a href="https://zh.wikipedia.org/wiki/%E8%8B%B1%E8%AA%9E%E5%9C%8B%E5%AE%B6%E5%92%8C%E5%9C%B0%E5%8D%80%E5%88%97%E8%A1%A8">近六十个国家</a>将其作为唯一或主要的<a href="https://zh.wikipedia.org/wiki/%E5%AE%98%E6%96%B9%E8%AA%9E%E8%A8%80">官方语言</a>，居世界之冠。英语作为当今的<a href="https://zh.wikipedia.org/wiki/%E4%B8%96%E7%95%8C%E8%AA%9E%E8%A8%80">世界语言</a>([5])([6])，是<a href="https://zh.wikipedia.org/wiki/%E8%81%AF%E5%90%88%E5%9C%8B">联合国</a>、<a href="https://zh.wikipedia.org/wiki/%E6%AD%90%E7%9B%9F">欧盟</a>、<a href="https://zh.wikipedia.org/wiki/%E5%9C%8B%E9%9A%9B%E6%B0%91%E8%88%AA%E7%B5%84%E7%B9%94">国际民航组织</a>等众多<a href="https://zh.wikipedia.org/wiki/%E5%9C%8B%E9%9A%9B%E7%B5%84%E7%B9%94">国际组织</a>的官方语言、<a href="https://zh.wikipedia.org/wiki/%E4%BA%92%E8%81%94%E7%BD%91">互联网</a>的法通语([7])，也是学习人数最多的<a href="https://zh.wikipedia.org/wiki/%E5%A4%96%E8%AA%9E">外语</a>。</p>
+<table>
+  <thead>
+      <tr>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>han</td>
+          <td>zhuo</td>
+          <td>jun</td>
+      </tr>
+  </tbody>
+</table>
+]]></content:encoded>
     </item>
     <item>
-      <title></title>
+      <title>PRML-DL</title>
+      <link>http://localhost:1313/blogs/posts/prml-dl/</link>
+      <pubDate>Mon, 03 Nov 2025 11:04:46 +0000</pubDate>
+      <guid>http://localhost:1313/blogs/posts/prml-dl/</guid>
+      <description>&lt;h2 id=&#34;batch-norm&#34;&gt;Batch Norm&lt;/h2&gt;
+&lt;p&gt;Reference：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.zhihu.com/question/553541499/answer/1892702115723452465&#34;&gt;https://www.zhihu.com/question/553541499/answer/1892702115723452465&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/54530247&#34;&gt;https://zhuanlan.zhihu.com/p/54530247&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;ics&#34;&gt;ICS&lt;/h3&gt;
+&lt;p&gt;内部协变量偏移（Internal Covariate Shift, ICS）指神经网络在训练过程中，由于前一层的参数更新导致后续层的输入分布发生显著变化的现象。这种分布的不稳定性会降低训练效率，增加模型收敛的难度。这种现象在深层网络中尤为明显， 是导致训练不稳定、收敛缓慢甚至&lt;a href=&#34;https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1&amp;amp;zhida_source=entity&#34;&gt;梯度消失&lt;/a&gt;/爆炸的原因之一。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;   ICS发生的主要原因：
+
+    1）网络参数更新导致分布变化；
+
+    2) 非线性激活函数的敏感性问题；[ReLU](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=ReLU&amp;amp;zhida_source=entity)、[Sigmoid](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=Sigmoid&amp;amp;zhida_source=entity)、[Tanh](https://zhida.zhihu.com/search?content_id=721744268&amp;amp;content_type=Answer&amp;amp;match_order=1&amp;amp;q=Tanh&amp;amp;zhida_source=entity)等非线性激活函数对不同输入范围的响应不同，如果前一层的输出分布偏移到激活函数的饱和区（如Sigmoid的两端), 梯度会变得极小(梯度消失),  导致训练停滞。
+
+    3）深度网络的累积效应； 即使每一层变化很小，由于多层叠加后， 输入分布的偏移会被放大，导致深层网络的输入分布剧烈波动；
+
+    4）梯度下降的依赖问题； 梯度下降算法假设输入数据的分布是稳定的， 但内部协变量偏移打破了这一假设， 使得优化过程变得不稳定。 由于每一层的输入分布不断变化，优化器需要不断调整学习率， 导致训练收敛变慢。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Batch Normalization（BN）通过对每一层的输入进行标准化（Normalization），使得数据分布更加稳定，是解决『内部协变量偏移』的一种有效方式。&lt;/p&gt;
+&lt;h3 id=&#34;bn-limitation&#34;&gt;BN limitation&lt;/h3&gt;
+&lt;p&gt;&lt;img alt=&#34;image&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/blogs/images/HwFPbofd6og0O6xuDjlcoeJhnEc.png&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;lnlayer-norm&#34;&gt;LN：Layer Norm&lt;/h3&gt;
+&lt;p&gt;&lt;img alt=&#34;image&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/blogs/images/WoqIbAeSFocPP6xvN19cda14nfc.png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# NLP Example&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;batch, sentence_length, embedding_dim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;embedding &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;randn(batch, sentence_length, embedding_dim)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 指定归一化的维度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;LayerNorm(embedding_dim)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 进行归一化&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm(embedding)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Image Example&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;N, C, H, W &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;randn(N, C, H, W)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Normalize over the last three dimensions (i.e. the channel and spatial dimensions)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# as shown in the image below&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;layer_norm &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;LayerNorm([C, H, W])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;output &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; layer_norm(input)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。faster&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<h2 id="batch-norm">Batch Norm</h2>
+<p>Reference：</p>
+<p><a href="https://www.zhihu.com/question/553541499/answer/1892702115723452465">https://www.zhihu.com/question/553541499/answer/1892702115723452465</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/54530247">https://zhuanlan.zhihu.com/p/54530247</a></p>
+<h3 id="ics">ICS</h3>
+<p>内部协变量偏移（Internal Covariate Shift, ICS）指神经网络在训练过程中，由于前一层的参数更新导致后续层的输入分布发生显著变化的现象。这种分布的不稳定性会降低训练效率，增加模型收敛的难度。这种现象在深层网络中尤为明显， 是导致训练不稳定、收敛缓慢甚至<a href="https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1&amp;zhida_source=entity">梯度消失</a>/爆炸的原因之一。</p>
+<pre><code>   ICS发生的主要原因：
+
+    1）网络参数更新导致分布变化；
+
+    2) 非线性激活函数的敏感性问题；[ReLU](https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=ReLU&amp;zhida_source=entity)、[Sigmoid](https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=Sigmoid&amp;zhida_source=entity)、[Tanh](https://zhida.zhihu.com/search?content_id=721744268&amp;content_type=Answer&amp;match_order=1&amp;q=Tanh&amp;zhida_source=entity)等非线性激活函数对不同输入范围的响应不同，如果前一层的输出分布偏移到激活函数的饱和区（如Sigmoid的两端), 梯度会变得极小(梯度消失),  导致训练停滞。
+
+    3）深度网络的累积效应； 即使每一层变化很小，由于多层叠加后， 输入分布的偏移会被放大，导致深层网络的输入分布剧烈波动；
+
+    4）梯度下降的依赖问题； 梯度下降算法假设输入数据的分布是稳定的， 但内部协变量偏移打破了这一假设， 使得优化过程变得不稳定。 由于每一层的输入分布不断变化，优化器需要不断调整学习率， 导致训练收敛变慢。
+</code></pre>
+<p>Batch Normalization（BN）通过对每一层的输入进行标准化（Normalization），使得数据分布更加稳定，是解决『内部协变量偏移』的一种有效方式。</p>
+<h3 id="bn-limitation">BN limitation</h3>
+<p><img alt="image" loading="lazy" src="/blogs/images/HwFPbofd6og0O6xuDjlcoeJhnEc.png"></p>
+<h3 id="lnlayer-norm">LN：Layer Norm</h3>
+<p><img alt="image" loading="lazy" src="/blogs/images/WoqIbAeSFocPP6xvN19cda14nfc.png"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># NLP Example</span>
+</span></span><span style="display:flex;"><span>batch, sentence_length, embedding_dim <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>embedding <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>randn(batch, sentence_length, embedding_dim)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定归一化的维度</span>
+</span></span><span style="display:flex;"><span>layer_norm <span style="color:#f92672">=</span> nn<span style="color:#f92672">.</span>LayerNorm(embedding_dim)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 进行归一化</span>
+</span></span><span style="display:flex;"><span>layer_norm(embedding)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Image Example</span>
+</span></span><span style="display:flex;"><span>N, C, H, W <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>input <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>randn(N, C, H, W)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Normalize over the last three dimensions (i.e. the channel and spatial dimensions)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># as shown in the image below</span>
+</span></span><span style="display:flex;"><span>layer_norm <span style="color:#f92672">=</span> nn<span style="color:#f92672">.</span>LayerNorm([C, H, W])
+</span></span><span style="display:flex;"><span>output <span style="color:#f92672">=</span> layer_norm(input)
+</span></span></code></pre></div><p>RMSNorm应该是LayerNorm砍掉算均值这一步，不强求中心一致。faster</p>
+<h4 id="稳定训练防止梯度爆炸消失">稳定训练，防止梯度爆炸/消失</h4>
+<ul>
+<li>
+<p>深层网络中每一层输出的尺度会不断变化，容易导致：</p>
+<ul>
+<li>梯度爆炸（数值变得特别大）
+<ul>
+<li>梯度消失（数值趋近于0）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>RMSNorm 通过统一每个 token 向量的“长度”，让每层的输出保持在稳定范围内。</p>
+</li>
+</ul>
+<p>类比：像做体操前“先把身体拉开”，让后续动作更安全、流畅。</p>
+<hr>
+<h4 id="加快收敛提升训练速度">加快收敛，提升训练速度</h4>
+<ul>
+<li>
+<p>归一化后每层的输入分布更“标准”，优化器收敛更快；</p>
+</li>
+<li>
+<p>在不需要预热很长时间的情况下就能达到稳定训练效果；</p>
+</li>
+<li>
+<p>RMSNorm 的实现更简单，计算量小于 LayerNorm，对硬件友好。</p>
+</li>
+</ul>
+<p>类比：就像跑步前热身，让你跑得更快、避免受伤。</p>
+<hr>
+<h4 id="提升模型泛化能力">提升模型泛化能力</h4>
+<ul>
+<li>
+<p>归一化后，模型不会偏向某些维度/特征；</p>
+</li>
+<li>
+<p>输出分布在各维度上更均匀，有助于模型在验证集、测试集上表现更好。</p>
+</li>
+</ul>
+<hr>
+<h2 id="positional-encoding">Positional Encoding</h2>
+<p>Reference：</p>
+<p><a href="https://jalammar.github.io/illustrated-transformer/">https://jalammar.github.io/illustrated-transformer/</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/427388113">https://zhuanlan.zhihu.com/p/427388113</a></p>
+<p><a href="https://spaces.ac.cn/archives/10352">https://spaces.ac.cn/archives/10352</a></p>
+<p>把一个词转换成向量，就好像把一个词映射到了一个高维空间的位置，意思相近的词会在高维空间内比较靠近，而加上位置向量，会让位置相近的词更靠近，位置远的词离得更远。为什么用cos，sin这种方式，使用sin和cos编码可以得到词语之间的相对位置。</p>
+<h3 id="rope-rotary-position-embedding">RoPE (Rotary Position Embedding)</h3>
+<p><img alt="image" loading="lazy" src="/blogs/images/LHeYbyvZzoGNMXxvdnocjdFEn4L.png"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 传统方法：位置信息加到向量上</span>
+</span></span><span style="display:flex;"><span>x_with_pos <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> pos_embedding
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># RoPE：通过旋转变换编码位置</span>
+</span></span><span style="display:flex;"><span>x_with_pos <span style="color:#f92672">=</span> rotate(x, position_angle)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 对于位置m的token，其query/key向量被旋转θ*m角度</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">rope_rotation</span>(x, position, dim):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算旋转角度</span>
+</span></span><span style="display:flex;"><span>    theta <span style="color:#f92672">=</span> <span style="color:#ae81ff">10000</span> <span style="color:#f92672">**</span> (<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, dim, <span style="color:#ae81ff">2</span>) <span style="color:#f92672">/</span> dim)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 位置m的旋转角度</span>
+</span></span><span style="display:flex;"><span>    angles <span style="color:#f92672">=</span> position <span style="color:#f92672">*</span> theta
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 构造旋转矩阵并应用</span>
+</span></span><span style="display:flex;"><span>    cos_vals <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>cos(angles)
+</span></span><span style="display:flex;"><span>    sin_vals <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sin(angles)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 旋转变换（简化版）</span>
+</span></span><span style="display:flex;"><span>    x_rotated <span style="color:#f92672">=</span> apply_rotation(x, cos_vals, sin_vals)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x_rotated
+</span></span></code></pre></div><h3 id="multi-modality-position多模态位置">multi-modality position多模态位置</h3>
+<h4 id="多模位置">多模位置</h4>
+<p>多模态模型居然连位置编码都没有形成共识。对于文本LLM，目前主流的位置编码是<a href="https://spaces.ac.cn/archives/8265">RoPE</a>（RoPE就不展开介绍了，假设读者已经熟知），更准确来说是RoPE-1D，因为原始设计只适用于1D序列。后来我们推导了<a href="https://spaces.ac.cn/archives/8397">RoPE-2D</a>，这可以用于图像等2D序列，按照RoPE-2D的思路我们可以平行地推广到RoPE-3D，用于视频等3D序列。</p>
+<p>然而，以上说的只是单一模态输入，当多种模态混合输入时，困难就出现了：文本是1D序列，所以它的位置只是一个标量nn；图像是2D的（“宽”和“高”），所以表达它的位置需要一个二维向量(x,y)(x,y)；视频则在图像的基础上新增了一个时间维度（或者说“帧”），所以它的位置是一个三维向量(x,y,z)(x,y,z)。当我们希望用同一个模型去处理三种模态的数据时，就要想办法糅合这三种不同形式的位置信息。</p>
+<p>RoPE在实现上是绝对位置编码，但结合基于内积的Attention来用时，内积之后位置会自动作差，（想象两个向量做内积只跟夹角有关，一个意思）从而实现了相对位置编码的效果。可同一大小的向量可以作差，不同大小的向量怎么作差呢？这就是多模态位置编码的困难所在。</p>
+<p>不少工作选择“逃避”这个困难，直接Flatten所有模态然后使用RoPE-1D，这不失为一种解决办法，但终究显得不够优雅。此外，强行Flatten也可能会降低模型性能的天花板，因为<a href="https://papers.cool/arxiv/2403.00522">《VisionLLaMA: A Unified LLaMA Backbone for Vision Tasks》</a>等工作已经表明，RoPE-2D的引入有助于提升模型效果尤其是变分辨率输入的效果。</p>
+<h2 id="image"><img alt="image" loading="lazy" src="/blogs/images/RxRzbjNHuooidzx93ZAcftCVnrf.png"></h2>
+<h2 id="cls-token">CLS token</h2>
+<p>Reference:</p>
+<p><a href="https://arxiv.org/pdf/1810.04805">https://arxiv.org/pdf/1810.04805</a></p>
+<p><a href="https://h2o.ai/wiki/classify-token/">https://h2o.ai/wiki/classify-token/</a></p>
+<h3 id="basic-concept">basic concept</h3>
+<p>Classify token ([CLS]) is a special token used in NLP and ML models, particularly those based on the Transformer architecture. It is a token that represents the entire input sequence or sentence and is placed at the beginning of the input.CLS = Classification Token，是BERT等Transformer模型中的一个特殊标记，专门用于获取整个序列的聚合表示。</p>
+<h3 id="how-it-works">how it works</h3>
+<p>Classify token ([CLS]) serves as an input representation for the classification tasks in NLP and ML. It encapsulates the information from the entire input sequence and carries it through the model&rsquo;s layers for further processing. The model then uses this representation to make predictions or classify the input into predefined categories.</p>
+<p>Classify token ([CLS]) plays a crucial role in NLP and ML tasks as it enables the model to perform classification on textual data. By incorporating the entire input sequence into a single representation, the model can capture important context and semantic information that aids in accurate classification. It helps the model understand the relationship between different words and their impact on the overall meaning of the text.</p>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li>
+<p>Sentiment analysis: Determining the sentiment (positive, negative, or neutral) of a given text.</p>
+</li>
+<li>
+<p>Text categorization: Classifying documents or articles into predefined categories.</p>
+</li>
+<li>
+<p>Intent recognition: Identifying the intent or purpose behind a user&rsquo;s input in conversational AI systems.</p>
+</li>
+<li>
+<p>Named entity recognition: Identifying and classifying named entities such as names, organizations, locations, etc., in text.</p>
+</li>
+</ul>
+<h3 id="与普通token的区别">与普通token的区别</h3>
+<p>以：The cat is running 为例</p>
+<h4 id="cls-token的特殊身份">CLS Token的特殊身份</h4>
+<p>想象一个会议室里的讨论场景：</p>
+<p>普通token（如&quot;cat&quot;, &ldquo;running&rdquo;） = 会议中的普通与会者</p>
+<p>CLS token = 会议的主持人/记录员</p>
+<h4 id="cls-token与普通token的根本区别">CLS Token与普通Token的根本区别</h4>
+<h5 id="位置特殊性">位置特殊性</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>普通Token: 在句子中有具体的语义位置
+</span></span><span style="display:flex;"><span>输入: &#34;The cat is running&#34;
+</span></span><span style="display:flex;"><span>- &#34;The&#34; 在位置1，表示限定词
+</span></span><span style="display:flex;"><span>- &#34;cat&#34; 在位置2，表示主语  
+</span></span><span style="display:flex;"><span>- &#34;is&#34; 在位置3，表示谓语
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>CLS Token: 永远在位置0，不表示任何具体语义
+</span></span><span style="display:flex;"><span>输入: &#34;[CLS] The cat is running&#34;
+</span></span><span style="display:flex;"><span>- &#34;[CLS]&#34; 在位置0，是个&#34;空容器&#34;，等待装入信息
+</span></span></code></pre></div><h5 id="初始状态差异">初始状态差异</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>普通Token的初始状态:
+</span></span><span style="display:flex;"><span>- &#34;cat&#34; 的embedding包含关于&#34;猫&#34;的语义信息
+</span></span><span style="display:flex;"><span>- &#34;running&#34; 的embedding包含关于&#34;跑步&#34;的动作信息
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>CLS Token的初始状态:
+</span></span><span style="display:flex;"><span>- 只是一个随机初始化的向量
+</span></span><span style="display:flex;"><span>- 不包含任何预定的语义信息
+</span></span><span style="display:flex;"><span>- 像一张白纸，等待被写入内容
+</span></span></code></pre></div><h4 id="注意力机制中的不同角色">注意力机制中的不同角色</h4>
+<h5 id="第一层的注意力模式">第一层的注意力模式</h5>
+<p>普通token &ldquo;cat&rdquo; 的注意力:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>&#34;cat&#34; 作为query时关注:
+</span></span><span style="display:flex;"><span>- &#34;The&#34; (30%) - 了解这是特指的猫
+</span></span><span style="display:flex;"><span>- &#34;cat&#34; (40%) - 保持自身信息  
+</span></span><span style="display:flex;"><span>- &#34;is&#34; (20%) - 理解动作关系
+</span></span><span style="display:flex;"><span>- &#34;running&#34; (10%) - 知道在做什么
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>目的: 丰富自己的语义理解
+</span></span></code></pre></div><p>CLS token 的注意力:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>&#34;[CLS]&#34; 作为query时关注:
+</span></span><span style="display:flex;"><span>- &#34;The&#34; (20%) - 收集限定信息
+</span></span><span style="display:flex;"><span>- &#34;cat&#34; (30%) - 收集主语信息
+</span></span><span style="display:flex;"><span>- &#34;is&#34; (20%) - 收集谓语信息  
+</span></span><span style="display:flex;"><span>- &#34;running&#34; (30%) - 收集动作信息
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>目的: 平等地收集所有信息，不偏向任何特定词汇
+</span></span></code></pre></div><h5 id="深层的注意力演进">深层的注意力演进</h5>
+<p>到第6层时:</p>
+<p>普通token &ldquo;cat&rdquo;:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>现在的&#34;cat&#34;已经知道:
+</span></span><span style="display:flex;"><span>- 自己是主语
+</span></span><span style="display:flex;"><span>- 正在执行&#34;running&#34;动作
+</span></span><span style="display:flex;"><span>- 在一个完整的句子中
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>注意力更加精准:
+</span></span><span style="display:flex;"><span>- 主要关注与自己语法相关的词 (60%)
+</span></span><span style="display:flex;"><span>- 适度关注其他内容 (40%)
+</span></span></code></pre></div><p>CLS token:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>现在的&#34;[CLS]&#34;已经理解:
+</span></span><span style="display:flex;"><span>- 整个句子的语法结构
+</span></span><span style="display:flex;"><span>- 主要的语义关系
+</span></span><span style="display:flex;"><span>- 句子的整体含义
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>注意力变得有选择性:
+</span></span><span style="display:flex;"><span>- 重点关注核心内容词 &#34;cat&#34;(40%) + &#34;running&#34;(40%)  
+</span></span><span style="display:flex;"><span>- 较少关注功能词 &#34;The&#34;(10%) + &#34;is&#34;(10%)
+</span></span></code></pre></div><h4 id="信息聚合过程的直观对比">信息聚合过程的直观对比</h4>
+<h5 id="信息流向的差异">信息流向的差异</h5>
+<p>普通token的信息更新:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>第1层: &#34;cat&#34; = 原始&#34;cat&#34;语义 + 少量上下文
+</span></span><span style="display:flex;"><span>第6层: &#34;cat&#34; = 丰富的&#34;cat&#34;语义 + 大量上下文
+</span></span><span style="display:flex;"><span>第12层: &#34;cat&#34; = 完整的上下文化&#34;cat&#34;表示
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>特点: 始终以&#34;cat&#34;的语义为核心，向外扩展
+</span></span></code></pre></div><p>CLS token的信息更新:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>第1层: &#34;[CLS]&#34; = 空白 + 一点点各种信息
+</span></span><span style="display:flex;"><span>第6层: &#34;[CLS]&#34; = 句子结构 + 主要语义关系  
+</span></span><span style="display:flex;"><span>第12层: &#34;[CLS]&#34; = 完整的句子级表示
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>特点: 从空白开始，逐步装入整个句子的精华
+</span></span></code></pre></div><h4 id="为什么cls-token能代表整个句子">为什么CLS Token能代表整个句子</h4>
+<h5 id="信息无损聚合的原理">信息无损聚合的原理</h5>
+<p>普通token的局限:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>每个普通token都有&#34;自我中心&#34;的倾向：
+</span></span><span style="display:flex;"><span>- &#34;dog&#34; 主要关心与狗相关的信息
+</span></span><span style="display:flex;"><span>- &#34;playing&#34; 主要关心动作相关的信息  
+</span></span><span style="display:flex;"><span>- &#34;garden&#34; 主要关心地点相关的信息
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>如果让&#34;dog&#34;代表整个句子 → 会偏向动物信息
+</span></span><span style="display:flex;"><span>如果让&#34;playing&#34;代表整个句子 → 会偏向动作信息
+</span></span></code></pre></div><p>CLS token的优势:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>CLS token没有预设的语义偏好：
+</span></span><span style="display:flex;"><span>- 不会偏向任何特定类型的信息
+</span></span><span style="display:flex;"><span>- 可以平等地聚合所有类型的信息
+</span></span><span style="display:flex;"><span>- 专门训练来承担&#34;全局总结&#34;的职责
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>就像一个专业的会议记录员，不会因为个人喜好
+</span></span><span style="display:flex;"><span>而偏重记录某些内容，而是客观全面地记录
+</span></span></code></pre></div><h5 id="梯度更新的特殊性">梯度更新的特殊性</h5>
+<p>普通token的更新目标:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>&#34;dog&#34; 的梯度目标：
+</span></span><span style="display:flex;"><span>- 更好地表示&#34;狗&#34;这个概念
+</span></span><span style="display:flex;"><span>- 更好地理解自己在句子中的作用
+</span></span><span style="display:flex;"><span>- 保持与&#34;狗&#34;相关的语义特征
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>但这些都有&#34;自我中心&#34;的倾向
+</span></span></code></pre></div><p>CLS token的更新目标:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>&#34;[CLS]&#34; 的梯度目标：
+</span></span><span style="display:flex;"><span>- 更好地预测句子的整体标签（如情感、类别）
+</span></span><span style="display:flex;"><span>- 更好地表示句子的整体语义
+</span></span><span style="display:flex;"><span>- 学会如何从各个token提取最重要的信息
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>没有&#34;自我中心&#34;，完全为了整体效果而优化
+</span></span></code></pre></div><hr>
+<h2 id="bert">BERT</h2>
+<p>Reference:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/360343071">https://zhuanlan.zhihu.com/p/360343071</a></p>
+<p><a href="http://arxiv.org/pdf/1810.04805">http://arxiv.org/pdf/1810.04805</a></p>
+<p>Transformer (2017)</p>
+<pre><code>├── Text Domain
+
+│   └── LLM (GPT, BERT, T5...)
+
+│
+
+├── Vision Domain    │   └── ViT (2020) → Vision Transformers
+
+│
+
+├── Generation Domain
+
+│   └── DiT (2022) → Diffusion + Transformer
+
+│
+
+└── Multimodal Domain
+
+    ├── VLM → Vision + Language
+
+    └── VLA → Vision + Language + Action
+</code></pre>
+<h3 id="masked-language-model-mlm">(Masked Language Model, MLM)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 核心思想：随机掩盖输入中的部分token，预测被掩盖的内容</span>
+</span></span><span style="display:flex;"><span>原始句子: <span style="color:#e6db74">&#34;The cat sat on the mat&#34;</span>
+</span></span><span style="display:flex;"><span>掩码处理: <span style="color:#e6db74">&#34;The [MASK] sat on the [MASK]&#34;</span>
+</span></span><span style="display:flex;"><span>预测目标: 预测第2个位置是<span style="color:#e6db74">&#34;cat&#34;</span><span style="color:#960050;background-color:#1e0010">，</span>第6个位置是<span style="color:#e6db74">&#34;mat&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 具体实现</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_masked_lm_predictions</span>(tokens, masked_lm_prob<span style="color:#f92672">=</span><span style="color:#ae81ff">0.15</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    masked_lm_prob: 掩盖15%的token
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    output_tokens <span style="color:#f92672">=</span> list(tokens)
+</span></span><span style="display:flex;"><span>    masked_lm_positions <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    masked_lm_labels <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, token <span style="color:#f92672">in</span> enumerate(tokens):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> random<span style="color:#f92672">.</span>random() <span style="color:#f92672">&lt;</span> masked_lm_prob:
+</span></span><span style="display:flex;"><span>            masked_lm_positions<span style="color:#f92672">.</span>append(i)
+</span></span><span style="display:flex;"><span>            masked_lm_labels<span style="color:#f92672">.</span>append(token)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># BERT的巧妙设计：</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> random<span style="color:#f92672">.</span>random() <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0.8</span>:
+</span></span><span style="display:flex;"><span>                output_tokens[i] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;[MASK]&#34;</span>     <span style="color:#75715e"># 80%: 替换为[MASK]</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> random<span style="color:#f92672">.</span>random() <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0.5</span>:
+</span></span><span style="display:flex;"><span>                output_tokens[i] <span style="color:#f92672">=</span> random_token  <span style="color:#75715e"># 10%: 替换为随机token  </span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># else: 保持原token不变              # 10%: 保持不变</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> output_tokens, masked_lm_positions, masked_lm_labels
+</span></span></code></pre></div><p>为什么这样设计？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 问题：如果总是用[MASK]替换，微调时会遇到分布偏移</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 训练时: &#34;The [MASK] is running&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 微调时: &#34;The dog is running&#34;  # 没有[MASK] token</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 解决方案：10%保持不变 + 10%随机替换</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 让模型学会在没有明确掩码信号时也能理解上下文</span>
+</span></span></code></pre></div><h3 id="next-sentence-prediction-nsp">(Next Sentence Prediction, NSP)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 目标：理解句子间的关系</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_nsp_data</span>(documents):
+</span></span><span style="display:flex;"><span>    examples <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> doc <span style="color:#f92672">in</span> documents:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(doc) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 50%的正样本：连续的两个句子</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> random<span style="color:#f92672">.</span>random() <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0.5</span>:
+</span></span><span style="display:flex;"><span>                sentence_a <span style="color:#f92672">=</span> doc[i]
+</span></span><span style="display:flex;"><span>                sentence_b <span style="color:#f92672">=</span> doc[i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>                label <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># IsNext</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 50%的负样本：来自不同文档的句子</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                sentence_a <span style="color:#f92672">=</span> doc[i]
+</span></span><span style="display:flex;"><span>                sentence_b <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span>choice(random<span style="color:#f92672">.</span>choice(documents))
+</span></span><span style="display:flex;"><span>                label <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>  <span style="color:#75715e"># NotNext</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            examples<span style="color:#f92672">.</span>append((sentence_a, sentence_b, label))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> examples
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输入格式</span>
+</span></span><span style="display:flex;"><span>input_format <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;[CLS] sentence_A [SEP] sentence_B [SEP]&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CLS token的输出用于NSP分类</span>
+</span></span></code></pre></div><h3 id="pre-trained-objective-function">Pre-trained Objective Function</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 联合训练两个任务</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">bert_pretraining_loss</span>(model_output, masked_positions, masked_labels, nsp_labels):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># MLM损失：只计算被掩盖位置的损失</span>
+</span></span><span style="display:flex;"><span>    mlm_logits <span style="color:#f92672">=</span> model_output<span style="color:#f92672">.</span>prediction_logits[masked_positions]
+</span></span><span style="display:flex;"><span>    mlm_loss <span style="color:#f92672">=</span> cross_entropy(mlm_logits, masked_labels)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># NSP损失：基于CLS token的输出</span>
+</span></span><span style="display:flex;"><span>    nsp_logits <span style="color:#f92672">=</span> model_output<span style="color:#f92672">.</span>seq_relationship_logits
+</span></span><span style="display:flex;"><span>    nsp_loss <span style="color:#f92672">=</span> cross_entropy(nsp_logits, nsp_labels)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 总损失</span>
+</span></span><span style="display:flex;"><span>    total_loss <span style="color:#f92672">=</span> mlm_loss <span style="color:#f92672">+</span> nsp_loss
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> total_loss
+</span></span></code></pre></div><h3 id="dual-direction-encoding-implementation">Dual-direction encoding implementation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 与单向模型的对比</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># GPT (单向): 只能看到左边的context</span>
+</span></span><span style="display:flex;"><span>attention_mask <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],  <span style="color:#75715e"># token1只能看到自己</span>
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],  <span style="color:#75715e"># token2能看到token1和自己  </span>
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>],  <span style="color:#75715e"># token3能看到前面所有</span>
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>]   <span style="color:#75715e"># token4能看到前面所有</span>
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># BERT (双向): 可以看到所有位置的context</span>
+</span></span><span style="display:flex;"><span>attention_mask <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>],  <span style="color:#75715e"># 每个token都能看到所有其他token</span>
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>],
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>], 
+</span></span><span style="display:flex;"><span>    [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><h3 id="encoder-vs-decoder">Encoder vs Decoder</h3>
+<ol>
+<li>
+<p>信息约束：Encoder无因果约束，Decoder有严格因果约束</p>
+</li>
+<li>
+<p>优化目标：Encoder优化理解质量，Decoder优化生成概率</p>
+</li>
+<li>
+<p>计算模式：Encoder并行处理，Decoder顺序处理</p>
+</li>
+<li>
+<p>设计哲学：Encoder以理解为中心，Decoder以生成为中心</p>
+</li>
+</ol>
+<p>非mask注意力和mask注意力机制</p>
+<hr>
+<h2 id="vlm">VLM</h2>
+<p>Reference：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/701039113">https://zhuanlan.zhihu.com/p/701039113</a></p>
+<hr>
+<h2 id="pope">POPE</h2>
+<p>Reference:</p>
+<p><a href="https://zhuanlan.zhihu.com/p/699623105">https://zhuanlan.zhihu.com/p/699623105</a></p>
+<p><a href="https://arxiv.org/pdf/2305.10355">https://arxiv.org/pdf/2305.10355</a></p>
+<p><img alt="image" loading="lazy" src="/blogs/images/XUZubPm4KoCUj9xRvbZcvnBfnqe.png"></p>
+<p>a more suitable method for the stable, fair and flexible object hallucination evaluation of LVLMs, namely pollingbased object probing evaluation (POPE). Specifically, POPE formulates the evaluation of object hallucination as a binary classification task that prompts LVLMs to output “Yes” or “No”, e.g., “Is there a chair in the image?”. In this way, by sampling objects that LVLMs are prone to hallucinate, we can construct a set of hard questions to poll LVLMs. As standard answers to these questions are just “Yes” or “No”, we can easily identify them without complex parsing rules, and avoid the influence of instruction designs and caption length, thus guaranteeing stability, fairness and flexibility</p>
+<h2 id="kv-cache">KV cache</h2>
+<h2 id="ggml">GGML</h2>
+<p>Reference:</p>
+<p><a href="https://huggingface.co/blog/introduction-to-ggml">https://huggingface.co/blog/introduction-to-ggml</a></p>
+<p>ggml 默认计算方式：调用 <code>ggml_mul_mat()</code></p>
+<p>在 <code>llama.cpp</code> 中的前向传播过程中，比如线性层（FullyConnected Layer）会构造：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>ggml_mul_mat(A, B)
+</span></span></code></pre></div><p>这构建了一个“图节点”，之后由：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>llama_graph_compute(graph)
+</span></span></code></pre></div><h2 id="gumbel-softmax">Gumbel-Softmax</h2>
+<hr>
+<h2 id="low-rank-attention">Low-rank Attention</h2>
+<p>Nadaraya–Watson Regression（纳达拉亚–沃森回归）是一种非常经典的非参数回归方法，本质上是加权平均法，用于拟合数据的平滑曲线，尤其常见于**核回归（kernel regression）**和一些深度学习中的可解释性模块。</p>
+<h2 id="image-1"><img alt="image" loading="lazy" src="/blogs/images/DKvobAtYpoNmvfxOtAFc3xW7nif.png"></h2>
+<h3 id="maths-explanation">Maths explanation</h3>
+<p>假设我们有一组训练样本 (xi,yi)(x_i, y_i)，现在想预测一个新点 xx 的函数值 y(x)y(x)，Nadaraya–Watson 回归形式为：</p>
+<p>$$
+y^(x)=∑i=1nK(x,xi)⋅yi∑i=1nK(x,xi)\hat{y}(x) = \frac{\sum_{i=1}^n K(x, x_i) \cdot y_i}{\sum_{i=1}^n K(x, x_i)}
+$$</p>
+<p>其中：</p>
+<ul>
+<li>
+<p>K(x,xi)K(x, x_i) 是一个核函数（kernel function），常用高斯核：</p>
+</li>
+<li>
+<p>K(x,xi)=exp⁡(−(x−xi)22h2)K(x, x_i) = \exp\left(-\frac{(x - x_i)^2}{2h^2}\right)</p>
+</li>
+<li>
+<p>hh：称为带宽参数（bandwidth），控制“邻近范围”大小。</p>
+</li>
+</ul>
+<hr>
+<p><strong>Nadaraya–Watson 回归 = 用邻近样本的加权平均来平滑预测结果，是核方法的基础形式，类似软注意力机制。</strong></p>
+<hr>
+<h2 id="covers-theme">Cover&rsquo;s theme</h2>
+<p><a href="https://kexue.fm/archives/7546">https://kexue.fm/archives/7546</a></p>
+<hr>
+<h2 id="gpu-storage">GPU storage</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/29264672961">https://zhuanlan.zhihu.com/p/29264672961</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/462191421">https://zhuanlan.zhihu.com/p/462191421</a></p>
+<p><a href="https://github.com/CalvinXKY/BasicCUDA/tree/master/memory_opt">https://github.com/CalvinXKY/BasicCUDA/tree/master/memory_opt</a></p>
+<hr>
+<h2 id="pip-install">pip install</h2>
+<p>在使用 <code>pip install</code> 命令时，“后缀 option（-&hellip;）”实际上是指 命令行选项（command-line options），它们以 <code>-</code> 或 <code>--</code> 开头，用于控制 <code>pip install</code> 的行为。这些选项可以改变安装方式、指定源、启用特定功能等。</p>
+<h3 id="options">Options</h3>
+<table>
+  <thead>
+      <tr>
+          <th>选项</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>-r, --requirement &lt;file&gt;</code></td>
+          <td>从文件中读取要安装的包列表（通常是 <code>requirements.txt</code>）<br>例：<code>pip install -r requirements.txt</code></td>
+      </tr>
+      <tr>
+          <td><code>-e, --editable &lt;path/url&gt;</code></td>
+          <td>以“可编辑模式”安装包（开发模式），修改源码立即生效<br>例：<code>pip install -e .</code></td>
+      </tr>
+      <tr>
+          <td><code>-i, --index-url &lt;url&gt;</code></td>
+          <td>指定包的索引源（PyPI 镜像地址）<br>例：<code>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy</code></td>
+      </tr>
+      <tr>
+          <td><code>--extra-index-url &lt;url&gt;</code></td>
+          <td>添加额外的包索引源</td>
+      </tr>
+      <tr>
+          <td><code>--no-index</code></td>
+          <td>不使用任何索引，只从本地目录或 <code>--find-links</code> 安装</td>
+      </tr>
+      <tr>
+          <td><code>-f, --find-links &lt;url/path&gt;</code></td>
+          <td>指定查找包的额外路径（本地或网络）<br>例：<code>pip install -f ./packages/ mypackage</code></td>
+      </tr>
+      <tr>
+          <td><code>--no-deps, --no-dependencies</code></td>
+          <td>安装包但不安装其依赖项<br>例：<code>pip install --no-deps requests</code></td>
+      </tr>
+      <tr>
+          <td><code>--force-reinstall</code></td>
+          <td>重新安装包，即使它已经存在</td>
+      </tr>
+      <tr>
+          <td><code>--upgrade, -U</code></td>
+          <td>升级包到最新版本<br>例：<code>pip install --upgrade package_name</code></td>
+      </tr>
+      <tr>
+          <td><code>-t, --target &lt;dir&gt;</code></td>
+          <td>将包安装到指定目录，而不是当前环境</td>
+      </tr>
+      <tr>
+          <td><code>-c, --constraint &lt;file&gt;</code></td>
+          <td>指定版本约束文件，限制版本升级范围</td>
+      </tr>
+      <tr>
+          <td><code>--user</code></td>
+          <td>安装到用户目录（避免使用 <code>sudo</code>）<br>例：<code>pip install --user package_name</code></td>
+      </tr>
+      <tr>
+          <td><code>--proxy &lt;proxy&gt;</code></td>
+          <td>使用代理访问网络</td>
+      </tr>
+      <tr>
+          <td><code>--timeout &lt;sec&gt;</code></td>
+          <td>设置连接超时时间</td>
+      </tr>
+      <tr>
+          <td><code>-v, --verbose</code></td>
+          <td>增加输出详细程度（可多次使用 <code>-vvv</code>）</td>
+      </tr>
+      <tr>
+          <td><code>-q, --quiet</code></td>
+          <td>减少输出信息</td>
+      </tr>
+      <tr>
+          <td><code>--pre</code></td>
+          <td>允许安装预发布版本（如 alpha、beta、rc）<br>例：<code>pip install --pre package_name</code></td>
+      </tr>
+      <tr>
+          <td><code>--no-cache-dir</code></td>
+          <td>禁用缓存，强制重新下载包</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="further-use">further use</h3>
+<h2 id="referencehttpszhuanlanzhihucomp673336277">Reference：https://zhuanlan.zhihu.com/p/673336277</h2>
+<h2 id="normalization">Normalization</h2>
+<p>Reference: <a href="https://www.cnblogs.com/wuliytTaotao/p/10837533.html">https://www.cnblogs.com/wuliytTaotao/p/10837533.html</a></p>
+<h2 id="reference">Reference: <a href="https://0809zheng.github.io/2020/03/03/regularization.html">https://0809zheng.github.io/2020/03/03/regularization.html</a></h2>
+<h2 id="mle">MLE</h2>
+<h2 id="最大似然估计">最大似然估计</h2>
+<h2 id="alignment-of-pytorch-cuda-python">Alignment of Pytorch, CUDA, Python</h2>
+<h3 id="supported-newest-cuda-version">Supported newest CUDA version</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>nvidia-smi
+</span></span><span style="display:flex;"><span>python -c &#34;import torch; print(torch.__version__); print(torch.cuda.is_available())&#34;
+</span></span></code></pre></div><h3 id="torch-cuda-alignment"><a href="https://pytorch.org/get-started/previous-versions/">torch cuda</a> alignment</h3>
+<h3 id="flash-attn-alignment">flash-attn alignment</h3>
+<p>首先检查你的cuda版本，通过nvcc -V查看环境是否含有cuda以及版本是否在11.6及以上，如果没有需要自己安装，下载地址在这里：<a href="https://link.zhihu.com/?target=https%3A//developer.nvidia.com/cuda-toolkit-archive">cuda-toolkit</a></p>
+<p><a href="https://github.com/Dao-AILab/flash-attention/releases">https://github.com/Dao-AILab/flash-attention/releases</a>在这个里面找到对应的版本下载即可</p>
+<h2 id="safetensor-config-download-to-local">Safetensor, Config, Download to local</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>cd <span style="color:#f92672">../</span>etc
+</span></span><span style="display:flex;"><span>source network_turbo
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pip install <span style="color:#f92672">-</span>U huggingface_hub
+</span></span><span style="display:flex;"><span>apt install aria2c
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sudo apt install aria2c</span>
+</span></span><span style="display:flex;"><span>wget https:<span style="color:#f92672">//</span>hf<span style="color:#f92672">-</span>mirror<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>hfd<span style="color:#f92672">/</span>hfd<span style="color:#f92672">.</span>sh
+</span></span><span style="display:flex;"><span>chmod a<span style="color:#f92672">+</span>x hfd<span style="color:#f92672">.</span>sh
+</span></span><span style="display:flex;"><span>export HF_ENDPOINT<span style="color:#f92672">=</span>https:<span style="color:#f92672">//</span>hf<span style="color:#f92672">-</span>mirror<span style="color:#f92672">.</span>com
+</span></span><span style="display:flex;"><span><span style="color:#f92672">./</span>hfd<span style="color:#f92672">.</span>sh model_name <span style="color:#f92672">--</span>tool aria2c <span style="color:#f92672">-</span>x <span style="color:#ae81ff">10</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>scp <span style="color:#f92672">-</span>P xxxxx <span style="color:#f92672">-</span>r user<span style="color:#a6e22e">@xxxx</span>:<span style="color:#f92672">/</span>path<span style="color:#f92672">/</span>to<span style="color:#f92672">/</span>your<span style="color:#f92672">/</span>file <span style="color:#f92672">./</span>path<span style="color:#f92672">/</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 不推荐传大文件，小的可以，从本地传到服务器远端</span>
+</span></span><span style="display:flex;"><span>scp <span style="color:#f92672">-</span>v <span style="color:#75715e">#detail info</span>
+</span></span><span style="display:flex;"><span>scp <span style="color:#f92672">-</span>q <span style="color:#75715e"># quiet</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>wget <span style="color:#75715e"># Web get</span>
+</span></span><span style="display:flex;"><span>aria2c <span style="color:#75715e"># 多线程</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 优先用后者，get address的时候注意不要cp了web的地址，而要raw file的地址</span>
+</span></span><span style="display:flex;"><span>aria2c https:<span style="color:#f92672">//</span>raw<span style="color:#f92672">.</span>githubusercontent<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>AoiDragon<span style="color:#f92672">/</span>POPE<span style="color:#f92672">/</span>e3e39262c85a6a83f26cf5094022a782cb0df58d<span style="color:#f92672">/</span>output<span style="color:#f92672">/</span>coco<span style="color:#f92672">/</span>coco_pope_random<span style="color:#f92672">.</span>json
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># detailed </span>
+</span></span><span style="display:flex;"><span>https:<span style="color:#f92672">//</span>www<span style="color:#f92672">.</span>cnblogs<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>TangQF<span style="color:#f92672">/</span>articles<span style="color:#f92672">/</span><span style="color:#ae81ff">18714419</span>
+</span></span></code></pre></div><h2 id="dataset">Dataset</h2>
+<p><a href="https://huggingface.co/datasets/lmms-lab/MME">MME</a> / <a href="https://huggingface.co/datasets/lmms-lab/POPE">POPE</a> / <a href="https://huggingface.co/datasets/lmms-lab/textvqa">textvqa</a> &hellip;</p>
+<p><a href="https://huggingface.co/collections/lmms-lab/lmms-eval-661d51f70a9d678b6f43f272">https://huggingface.co/collections/lmms-lab/lmms-eval-661d51f70a9d678b6f43f272</a></p>
+<p>在这里找多模态模型的所有数据集去下载，别在github里下通常不是放真正数据集的仓库</p>
+<h2 id="vim-use">Vim Use</h2>
+<p><strong>全选（高亮显示</strong>）：按esc后，然后ggvG或者ggVG</p>
+<p>**全部复制：**按esc后，然后ggyG</p>
+<p>**全部删除：**按esc后，然后dG</p>
+<p>解析：</p>
+<p><strong>gg：<strong>是让光标移到首行，在</strong>vim</strong>才有效，vi中无效</p>
+<p><strong>v ：</strong> 是进入Visual(可视）模式</p>
+<p>**G ：**光标移到最后一行</p>
+<p><strong>选</strong>中内容以后就可以其他的操作了，比如：
+<strong>d</strong>  删除<strong>选</strong>中内容
+<strong>y</strong>  复制<strong>选</strong>中内容到0号寄存器
+<strong>&quot;+y</strong>  复制<strong>选</strong>中内容到＋寄存器，也就是系统的剪贴板，供其他程序用</p>
+<h2 id="cpmv-path">cp/mv PATH</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>cp 命令
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  # 情况1：复制目录内容
+</span></span><span style="display:flex;"><span>  cp -r source_dir/ dest_dir/
+</span></span><span style="display:flex;"><span>  # 结果：source_dir里的所有文件复制到dest_dir里
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  # 情况2：复制整个目录
+</span></span><span style="display:flex;"><span>  cp -r source_dir dest_dir/
+</span></span><span style="display:flex;"><span>  # 结果：在dest_dir里创建source_dir文件夹
+</span></span><span style="display:flex;"><span>mv 命令
+</span></span><span style="display:flex;"><span>移动到目录内
+</span></span><span style="display:flex;"><span>  mv file.txt dir1/        # file.txt移动到dir1目录里
+</span></span><span style="display:flex;"><span>  mv file.txt dir1/dir2/   # file.txt移动到dir1/dir2目录里
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>重命名
+</span></span><span style="display:flex;"><span>  mv file.txt newname.txt  # 重命名文件
+</span></span><span style="display:flex;"><span>  mv dir1 newdir          # 重命名目录
+</span></span></code></pre></div><h2 id="ridge-regression----square-loss">Ridge regression  &amp;&amp;  Square loss</h2>
+<ol>
+<li>
+<p>岭回归是：假设参数w有高斯先验（prior），从而改变MAP最大后验，在求解的时候约束参数分布</p>
+</li>
+<li>
+<p><code>square loss</code>是：如果假设误差服从 <strong>高斯分布</strong>，那么用 <strong>最大似然估计</strong><code>**(MLE)**</code> 来推参数，就自然等价于最小化 <strong>平方损失</strong>。一般都会默认噪声是gaussian分布的，这样得到的普通最小二乘回归；但缺点也很明显就是平方损失对 outlier 太敏感。实际应用里，经常需要根据数据特点选择更合适的噪声模型，从而得到更鲁棒的损失函数。</p>
+</li>
+<li>
+<p>似然更像是从数据推参数：概率是已知参数下看数据的可能性；似然是已知数据下看参数的可能性。</p>
+</li>
+</ol>
+<p>似然：数据给参数的证据。</p>
+<p>先验：数据之前你对参数的信念。</p>
+<p>后验：结合两者，数据之后你对参数的新信念。</p>
+<h2 id="for-circle">for circle</h2>
+<p>首先看当前循环头部和循环头部的差值，就是i+=？；</p>
+<p>再看循环几次，就是i max（！）=n*？；</p>
+<p>再看次要条件，可以考虑将？和！都缩小一半；然后循环内主索引扩一倍。</p>
+<p>$$
+d_{L2}(x,y) = \sqrt{\sum_{i=1}^{d}(x_i - y_i)^2}
+$$</p>
+<p>$$
+d_{cosine}(x,y) = 1 - \frac{x \cdot y}{||x|| \cdot ||y||}
+$$</p>
+]]></content:encoded>
+    </item>
+    <item>
+      <title>VLM pruning : Hw and Alg co-design</title>
       <link>http://localhost:1313/blogs/posts/vlm-pruning--hw-and-alg-co-design/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 03 Nov 2025 10:40:03 +0000</pubDate>
       <guid>http://localhost:1313/blogs/posts/vlm-pruning--hw-and-alg-co-design/</guid>
-      <description>&lt;h2 id=&#34;visionzip-longer-is-better-but-not-necessary-in-vision-language-models&#34;&gt;&lt;strong&gt;VisionZip: Longer is Better but Not Necessary in Vision Language Models&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;background&#34;&gt;Background&lt;/h3&gt;&#xA;&lt;h3 id=&#34;algorithm&#34;&gt;Algorithm&lt;/h3&gt;&#xA;&lt;p&gt;此外也是采用了merge，整篇文章没什么突出的算法核心点，但是工程、实验做的很扎实&lt;/p&gt;&#xA;&lt;h2 id=&#34;heading&#34;&gt;&lt;strong&gt;[CLS] Attention is All You Need for Training-Free Visual Token Pruning: Make VLM Inference Faster&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;h2 id=&#34;image&#34;&gt;&lt;img src=&#34;http://localhost:1313/blogs/images/R2UWbLa34oFCItxsmIAcBwchnTc.png&#34; alt=&#34;image&#34;&gt;&lt;/h2&gt;&#xA;&lt;h3 id=&#34;background-analysisand-attention-dispersion&#34;&gt;&lt;strong&gt;Background Analysis：&lt;/strong&gt;&lt;em&gt;**attention shift **&lt;/em&gt;**and **&lt;em&gt;&lt;strong&gt;attention dispersion&lt;/strong&gt;&lt;/em&gt;&lt;/h3&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;em&gt;**Attention shift: **&lt;/em&gt;** a tendency for textual attention to focus more on later parts of the visual token sequence, which is not desirable for preserving valuable visual information.**&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;em&gt;**Attention dispersion:  **&lt;/em&gt;&lt;strong&gt;refers to the less concentrated attention distribution within the LLM compared to the visual encoder.&lt;/strong&gt;&lt;/p&gt;</description>
+      <description>&lt;h2 id=&#34;visionzip-longer-is-better-but-not-necessary-in-vision-language-models&#34;&gt;&lt;strong&gt;VisionZip: Longer is Better but Not Necessary in Vision Language Models&lt;/strong&gt;&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;background&#34;&gt;Background&lt;/h3&gt;
+&lt;h3 id=&#34;algorithm&#34;&gt;Algorithm&lt;/h3&gt;
+&lt;p&gt;此外也是采用了merge，整篇文章没什么突出的算法核心点，但是工程、实验做的很扎实&lt;/p&gt;
+&lt;h2 id=&#34;heading&#34;&gt;&lt;strong&gt;[CLS] Attention is All You Need for Training-Free Visual Token Pruning: Make VLM Inference Faster&lt;/strong&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;image&#34;&gt;&lt;img alt=&#34;image&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/blogs/images/R2UWbLa34oFCItxsmIAcBwchnTc.png&#34;&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;background-analysisand-attention-dispersion&#34;&gt;&lt;strong&gt;Background Analysis：&lt;/strong&gt;&lt;em&gt;**attention shift **&lt;/em&gt;**and **&lt;em&gt;&lt;strong&gt;attention dispersion&lt;/strong&gt;&lt;/em&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;**Attention shift: **&lt;/em&gt;** a tendency for textual attention to focus more on later parts of the visual token sequence, which is not desirable for preserving valuable visual information.**&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;**Attention dispersion:  **&lt;/em&gt;&lt;strong&gt;refers to the less concentrated attention distribution within the LLM compared to the visual encoder.&lt;/strong&gt;&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<h2 id="visionzip-longer-is-better-but-not-necessary-in-vision-language-models"><strong>VisionZip: Longer is Better but Not Necessary in Vision Language Models</strong></h2>
+<hr>
+<h3 id="background">Background</h3>
+<h3 id="algorithm">Algorithm</h3>
+<p>此外也是采用了merge，整篇文章没什么突出的算法核心点，但是工程、实验做的很扎实</p>
+<h2 id="heading"><strong>[CLS] Attention is All You Need for Training-Free Visual Token Pruning: Make VLM Inference Faster</strong></h2>
+<h2 id="image"><img alt="image" loading="lazy" src="/blogs/images/R2UWbLa34oFCItxsmIAcBwchnTc.png"></h2>
+<h3 id="background-analysisand-attention-dispersion"><strong>Background Analysis：</strong><em>**attention shift **</em>**and **<em><strong>attention dispersion</strong></em></h3>
+<ol>
+<li>
+<p><em>**Attention shift: **</em>** a tendency for textual attention to focus more on later parts of the visual token sequence, which is not desirable for preserving valuable visual information.**</p>
+</li>
+<li>
+<p><em>**Attention dispersion:  **</em><strong>refers to the less concentrated attention distribution within the LLM compared to the visual encoder.</strong></p>
+</li>
+</ol>
+<h3 id="methods"><strong>Methods</strong></h3>
+<p><img alt="image" loading="lazy" src="/blogs/images/DgQMb6qIco9naKxhiWzc6TAHnWh.png">
+核心的想法是用CLS attention 来决定prune掉的token（patch），经过 Visual Encoder 之后，取CLS attention，后R%的被prune掉（提到一个动态阈值的公式，没啥用），认为这些部分的patch对于整体的语义贡献很低。整体就是简单的思路采用CLS token的attention score去处理。</p>
+<p>这里的问题就是到底是否能真正以CLS token的attention值来说明真正的importance然后做prune，这样做基本不需要硬件的额外支持</p>
+<h3 id="scores"><strong>Scores</strong></h3>
+<p><img alt="image" loading="lazy" src="/blogs/images/VOZFbT9N3o9iaBxCQUicNL47nKe.png">
+从ablation来看整个论文的思路基本都是在考虑：</p>
+<ol>
+<li>
+<p>prune的位置：LLM浅层 OR LLM之前（visual encoder之后）</p>
+</li>
+<li>
+<p>判断prune token的方式：[CLS] token attention OR random OR patch attention</p>
+</li>
+</ol>
+<p>没有考虑的地方：</p>
+<ol>
+<li>
+<p>head attention ：加入head的充分考虑，比如HeatViT那种加入head score的or so</p>
+</li>
+<li>
+<p>prune的只能是token-wise的么？有论文会在d维度做适当的prune，或者head维度做prune，也都是一些常见的思路，另外结构化稀疏性肯定是要优先考虑的，比如可以细粒度结构化之类的，参考sanger非常经典，但是做的也比较多</p>
+</li>
+<li>
+<p>大多论文都采用prune+merge的模式，能不能改变这个模式，能把prune掉的token information利用起来（如果是token-wise的话）或者充分利用prune掉的其他信息，比如用可学习的小型网络等来学习一些模式，把prune掉的用比较efficient的方式恢复出来。</p>
+</li>
+<li>
+<p>有没有可能摆脱importance做prune的选择，比如#20DiVprune是一个很取巧的方式</p>
+</li>
+<li>
+<p>text-agnostic肯定是一种更为accuracy-friendly的算法，那么能不能有一种方法，先prune掉一部分token（if token-wise)然后再想办法根据text token去恢复或者更好的提取non-informative token或者进一步做更合适的prune，是一个2-stage的方法</p>
+</li>
+<li>
+<p>可以调查一下对于VLM计算复杂度最大的地方，二次方的attention肯定是要解决的，可是如果能有办法优化后续的大规模的FFN那肯定是更efficient的</p>
+</li>
+</ol>
+<h2 id="sparsevlm-visual-token-sparsification-for--efficient-vision-language-model-inference_"><strong>SPARSEVLM: VISUAL TOKEN SPARSIFICATION FOR  EFFICIENT VISION-LANGUAGE MODEL INFERENCE_VVVI</strong></h2>
+<hr>
+<h3 id="background--target">Background &amp; Target</h3>
+<p>we propose an efficient training-free token optimization mechanism dubbed SparseVLM without extra parameters or fine-tuning costs. Concretely, given that visual tokens complement text tokens in VLMs for linguistic reasoning, we select visual-relevant text tokens to rate the significance of vision tokens within the self-attention matrix extracted from the VLMs. Then we progressively prune irrelevant tokens.</p>
+<p>SparseVLM 是一个训练免（training-free）、文本引导（text-aware）的视觉 token 稀疏化框架：
+先挑出“和图像强相关”的文本 token 当评审（raters），用它们在解码器里的跨模态注意力给每个视觉 token 打分；然后逐层按打分和一个秩（rank）自适应规则删掉不重要的视觉 token；被删的 token 不直接丢，而是回收—聚类—重构成少量“压缩 token”再放回，尽量不丢信息。这样能显著减 FLOPs/显存/时延，同时保持高精度。</p>
+<h3 id="algorithm-1">Algorithm</h3>
+<p>非常好的一个text-agnostic算法，大概率我最后会follow这个做一些工作</p>
+<h4 id="raters">Raters</h4>
+<p>text-aware的核心是根据text tokens有针对性的对visual tokens做pruning，本文的一个重要算法是首先在进入LLM之前进行一次raters的选择，raters是一部分text tokens，叫做“评委”，通常来说一句text中真正对图像token选取有指导意义的并没有几个，比如大量的冠词，介词等都是不重要的可以忽略的，因此要选择raters，先从整句文本里评估每个词和视觉的关联度$$
+R
+$$
+，只保留高于平均值 $$
+m=Mean(R)
+$$
+的候选词当评委，减少无关词对打分的噪声；评委集合用策略 $$
+S
+$$
+确定，整步只在进入解码器之前做一次，开销 $$
+O(Lt\ · Lv\  · D)
+$$</p>
+<h4 id="rate-the-visual-tokens-with-scores">Rate the visual tokens with scores</h4>
+<p>对每个视觉 token j，把评委（文本）对它的注意力分数按行求平均，得到第 j 个视觉 token 的综合价值分，然后根据这个得分进行prune，具体prune掉多少个呢，用到了一个rank-based的方法，比如如果P矩阵是接近满秩的话，那么就说明都是线性无关的，就基本不需要prune，保留基本所有visual tokens。如果P是低秩的话，那么就多prune掉一些，根据注意力分数。 $$
+N=α⋅(Lv−Rank(P))
+$$</p>
+<h4 id="merge">Merge</h4>
+<p>也是按照分数merge，做一次k 近邻密度峰聚类：</p>
+<h2 id="madtp-multimodal-alignment-guided-dynamic-token-pruning-for--accelerating-vision-language-transformer"><strong>MADTP: Multimodal Alignment-Guided Dynamic Token Pruning for  Accelerating Vision-Language Transformer</strong></h2>
+<hr>
+<p><img alt="image" loading="lazy" src="/blogs/images/YRIEbmTgqorENvx2tmDcVrIbnff.png"></p>
+<h3 id="mag"><strong>MAG</strong></h3>
+<h3 id="dtp"><strong>DTP</strong></h3>
+<p><strong>事实证明，单模态压缩中的动态令牌修剪比静态令牌修剪更有效，因为它可以根据输入实例的复杂程度自适应调整模型的压缩率。</strong>
+<img alt="image" loading="lazy" src="/blogs/images/GZqrbdyPSoDvgAx8octcFCM0nvE.png"></p>
+<h3 id="tis"><strong>TIS</strong></h3>
+<p>$$
+TIS = (Scls + Sself + Stoken)/3</p>
+<p>$$</p>
+<p><strong>比如拿 visual 模态来举例：</strong></p>
+<h2 id="vscan-rethinking-visual-token-reduction-for-efficient-large-vision-language-models"><strong>VScan: Rethinking Visual Token Reduction for Efficient Large Vision-Language Models</strong></h2>
+<h2 id="image-1"><img alt="image" loading="lazy" src="/blogs/images/PzhNbrL9SocCajxN5CncqrLDnJe.png"></h2>
+<h3 id="observations"><strong>Observations</strong></h3>
+<ol>
+<li>
+<p><strong>In the visual encoding stage, the visual encoder attends to locally significant tokens in the shallow layers, focusing on fine-grained local details, while at deeper layers, it gradually shift its focus to a highly condensed set of tokens that encapsulate broader global context;（visual encoder里面随着层数增多，注意力呈现的变化趋势,下面两个图我自己可视化了一下，可以看到attention focus由广泛到集中，但问题是集中的部分并不完全是我们人眼所普遍认为的focus）</strong></p>
+</li>
+<li>
+<p><strong>In the LLM decoding stage, early layers exhibit strong positional bias toward visual tokens appearing later in the sequence, neglecting their semantic relevance; as the layers deepen, cross-modal interactions begin to emerge, and output token probabilities typically converge in the mid-to-late layers where visual information is more effectively integrated into the language stream.（和FsterVLM里面提到的attention dispersion是一个东西）</strong></p>
+</li>
+</ol>
+<h3 id="current-methods-limitations"><strong>Current methods limitations</strong></h3>
+<p><strong>可以看到这里用了这样一张图片和query来disable之前的几种主流方法</strong></p>
+<p><img alt="image" loading="lazy" src="/blogs/images/ZtWWbX6aHo8m1Cx9xQdcZulHnEe.png"></p>
+<p><strong>然后做了3个study：各种可视化去探究LLM对于textual和visual信息的处理随着层数变化的改变情况</strong>
+<img alt="image" loading="lazy" src="/blogs/images/OQvkb3nnuopOgrxweM2cPr0sn5I.png">
+<strong>左边的图其实就是attention shift的可视化（位置编码的影响），随着LLM layers增多，这种现象逐渐diminish</strong></p>
+<p><strong>右边的图：We observe that the middle LLM layers are primarily responsible for interacting with the visual tokens, whereas the early and deep layers focus predominantly on processing textual information.就是LLM的中间的那些layers会更倾向于结合visual信息聚合处理，然而shallow/deep layer都会focus更多在textual信息上</strong>
+<img alt="image" loading="lazy" src="/blogs/images/IO9vbikGqoUEXwxNisucXMZHnG0.png">
+<strong>We observe that in more challenging open-ended tasks like GQA, the next-token predictions stabilize around LLM layer 20, whereas in simpler yes/no tasks such as POPE, the predictions converge earlier, around LLM layer 16.</strong></p>
+<p><strong>在这一部分得出的结论就是：LLM的early layers并不是最适合pruning的层数位置，因为</strong></p>
+<ol>
+<li>
+<p>** positional bias；**</p>
+</li>
+<li>
+<p>** limited engagement of visual content**</p>
+</li>
+</ol>
+<p><strong>而middle layers才是最好的，因为：</strong></p>
+<ol>
+<li>
+<p><strong>better preserves critical cross-modal interactions</strong></p>
+</li>
+<li>
+<p><strong>minimizes disruption to model predictions（太深层起不到太好的pruning效果而且可能会有disrupt）</strong></p>
+</li>
+</ol>
+<h3 id="methods-1"><strong>Methods</strong></h3>
+<p><img alt="image" loading="lazy" src="/blogs/images/MtSRbnAfHoWKSexJlXGctCgDn4e.png"></p>
+<h4 id="reducing-visual-redundancy-via-complementary-global-and-local-scans"><strong>Reducing Visual Redundancy via Complementary Global and Local Scans</strong></h4>
+<h5 id="global-scan"><strong>Global Scan</strong></h5>
+<p><strong>因为visual encoder的最后一层（或者倒数第二层）是global content，所以采用跟之前工作类似的方法CLS attention的方式来选择 global tokens （g）</strong></p>
+<h5 id="local-scan"><strong>Local Scan</strong></h5>
+<p><strong>因为前面已经分析过了直接使用CLS attention获取全局的信息会使得一些重要的细节信息遗漏掉，所以还要在visual encoder的浅层来获取一些finer的细节信息，具体选择方式是按照windows去做选择（l），g和l的数量被控制为一样</strong></p>
+<h5 id="token-merging"><strong>Token Merging</strong></h5>
+<p><strong>把未被选择的那些token与被选择的token做内积，对每个unselected token选择最相似的selected token并且做average merge得到最终的merged representation（感觉这个地方在arch层面可以考虑适当的优化）</strong></p>
+<h4 id="reducing-textual-irrelevance-via-middle-layer-pruning"><strong>Reducing Textual Irrelevance via Middle Layer Pruning</strong></h4>
+<p><strong>Further refine the token set based on their relevance to the text query</strong></p>
+<h3 id="experiment-scores"><strong>Experiment Scores</strong></h3>
+<h2 id="skip-vision-efficient-and-scalable-acceleration-of-vision-language-models-via-adaptive-token-skipping"><strong>Skip-Vision: Efficient and Scalable Acceleration of Vision-Language Models via Adaptive Token Skipping</strong></h2>
+<h2 id="image-2"><img alt="image" loading="lazy" src="/blogs/images/IjGpbXnSroa5uoxmbiAcdZzIn9g.png"></h2>
+<h2 id="accelerating-pre-training-of-multimodal-llms-via-chain-of-sight"><strong>Accelerating Pre-training of Multimodal LLMs via Chain-of-Sight</strong></h2>
+<h2 id="image-3"><img alt="image" loading="lazy" src="/blogs/images/DI3hbanZloB0KCxy4iccxpavnEe.png"></h2>
+<h3 id="brief-introduction-">**Brief Introduction **</h3>
+<p><strong>用更少的visual tokens训练通常意味着perfomance的下降，那么有没有一种方式能够解决这个问题，用更少的visual tokens去包含更多的信息，且能不受input resolution的影响，从而实现更efficient的pre-training？</strong></p>
+<p><strong>CoS(chain of sight)就是这样一个方式，这是一个vision-language bridge的模块，整体的思路有点类似之前的Perceiver抑或是Q-former，但还有一个特点是对预训练和微调部分使用的token有很大差别，后者使用更多更fine的tokens，以获取更finer的vision信息，从而弥补perfomance可能的掉点</strong>
+<img alt="image" loading="lazy" src="/blogs/images/HSSVbssrXodcvmxT2z4ciYR5n8d.png"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>The core mechanism is our multi-scale visual resampler, which produces visual tokens 
+</span></span><span style="display:flex;"><span>of multiple visual scales. Inspired by the classical concept of multi-scale feature hierarchy in visual 
+</span></span><span style="display:flex;"><span>understanding [105, 41, 32, 106, 82, 52], we partition the visual features produced by the visual 
+</span></span><span style="display:flex;"><span>backbone using windows of multiple sizes. For each window size, a visual resampler is implemented 
+</span></span><span style="display:flex;"><span>to produce a specified number of visual tokens per window. Subsequently, the visual tokens from 
+</span></span><span style="display:flex;"><span>various window sizes are gathered and linked in a global-to-local manner, forming a chain of reasoning 
+</span></span><span style="display:flex;"><span>steps from coarse views gradually to fine-grained perspectives.
+</span></span><span style="display:flex;"><span>On top of this, we propose a post-pretrain token scaling strategy, which compounds the elements of 
+</span></span><span style="display:flex;"><span>input resolution and window size manipulation to enable a significant escalation in the token count 
+</span></span><span style="display:flex;"><span>for our Chain-of-Sight, reaching up to 16× increase during fine-tuning. Such adaptability allows for 
+</span></span><span style="display:flex;"><span>the fine-tuning of the model with a flexible granularity or complexity as required, without the the 
+</span></span><span style="display:flex;"><span>necessity for an additional pre-training phase.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>图像 → ViT视觉编码器 → Multi-Scale Visual Resampler → 少量 token 输入语言模型 → 预训练  
+</span></span><span style="display:flex;"><span>                                               ↓  
+</span></span><span style="display:flex;"><span>                      （微调时再放大 token 数量） → 多 token 输入语言模型 → 下游任务微调
+</span></span></code></pre></div><h3 id="methods-delineate"><strong>Methods Delineate</strong></h3>
+<h4 id="multi-scale-visual-resamplers"><strong>Multi-scale visual Resamplers</strong></h4>
+<h4 id="post-pretrain-token-scaling"><strong>Post-Pretrain Token Scaling</strong></h4>
+<p><img alt="image" loading="lazy" src="/blogs/images/BPBibeDZZokNk6xe0LycsqwXnuc.png"></p>
+<ol>
+<li>
+<p><strong>在预训练中只用少量视觉 token（如 32/80），大幅加速训练；</strong></p>
+</li>
+<li>
+<p><strong>微调阶段再将 token 数扩大（通过调整输入分辨率 + 减小窗口 size）；</strong></p>
+</li>
+<li>
+<p><strong>提出 compound scaling：resolution scaling × window scaling，最多可将 token 数扩大 16 倍（如 32 → 512）；</strong></p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>Step 1: 预训练阶段
+</span></span><span style="display:flex;"><span>    图像分辨率低（224×224）
+</span></span><span style="display:flex;"><span>    window size 粗（16、8）
+</span></span><span style="display:flex;"><span>    每个 window 分配少量 query
+</span></span><span style="display:flex;"><span>    → 得到少量（如 32、80）视觉 token
+</span></span><span style="display:flex;"><span>    → 快速预训练
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Step 2: 微调阶段
+</span></span><span style="display:flex;"><span>    提高分辨率（如 448×448）
+</span></span><span style="display:flex;"><span>    引入更小的 window size（8、4、2）
+</span></span><span style="display:flex;"><span>    每个 window 分配更多 query
+</span></span><span style="display:flex;"><span>    → 得到更多（如 336、528、1296）视觉 token
+</span></span><span style="display:flex;"><span>    → 细粒度理解图像，提高任务性能
+</span></span></code></pre></div><h2 id="heatvit-hardware-efficient-adaptive-token-pruning-for-vision-transformers"><strong>HeatViT: Hardware-Efficient Adaptive Token Pruning for Vision Transformers</strong></h2>
+<hr>
+<h3 id="background--target-1">Background &amp; Target</h3>
+<p>_<strong>HeatViT</strong>__: _While vision transformers (ViTs) have continuously achieved new milestones in the field of computer vision, their sophisticated network architectures with high computation and memory costs have impeded their deployment on resource-limited edge devices</p>
+<p>we propose a hardware-efficient image-adaptive token pruning framework called HeatViT for efficient yet accurate ViT acceleration on embedded FPGAs.</p>
+<p>_**SPViT: **_high computation and memory cost</p>
+<p>a dynamic attention-based multi-head token selector, which is a lightweight module for adaptive instance-wise token selection. We further introduce a soft pruning technique, which integrates the less informative tokens chosen by the selector module into a package token rather than discarding them completely</p>
+<p>project: <a href="https://github.com/PeiyanFlying/SPViT">https://github.com/PeiyanFlying/SPViT</a></p>
+<h3 id="algorithm-2">Algorithm</h3>
+<h4 id="_head-evaluation-multi-head-_token-classifier">_Head-Evaluation Multi-Head _<em>Token Classifier</em></h4>
+<p><em><strong>SPViT:</strong></em></p>
+<p>整体呢就是采用一个可学习的网络（主要就是几层很小的MLP，实际计算量不足ViT的1%），用这个网络去学习keep/prune的规则、模式，算法思路上就是每个head关注的特征和部分是不一样的，也就是每个head本身对于所有token是自带一定注意力的，可以学习到head score那么自然就会想到在最后concat的时候采用加权平均的方式，也就是用 $$
+head\ score \times token \ score \ for each \ head
+$$
+来表示
+<img alt="image" loading="lazy" src="/blogs/images/UeyTbGK3WooyitxO2oMcFFf1nCd.png"></p>
+<ol>
+<li>
+<p>$$
+MLP_1:LayerNorm \rightarrow Linear(d,d/2) \rightarrow GELU
+$$</p>
+</li>
+<li>
+<p>$$
+MLP_2:Linear(d,d/2) \rightarrow GELU \rightarrow Linear(d/2,d/4) \rightarrow GELU \rightarrow Linear(d/4,2)
+$$</p>
+</li>
+<li>
+<p>$$
+MLP_3:Linear(H,H/2) \rightarrow GELU \rightarrow Linear(H/2,H) \rightarrow Sigmoid
+$$</p>
+</li>
+<li>
+<p>$$
+f_i^{local}=MLP_1(x_i) \in \mathbb{R}^{N \times d/2}
+$$</p>
+</li>
+<li>
+<p>$$
+f_i^global=AvgPool(MLP_1(x_i),D) \in \mathbb{R}^{1 \times d/2}
+$$</p>
+</li>
+<li>
+<p>$$
+f_i=[f_i^local,f_i^global] \in \mathbb{R}^{N \times d}
+$$</p>
+</li>
+<li>
+<p>$$
+t_i=Softmax(MLP_2(f_i)) \in \mathbb{R}^{N \times 2}
+$$</p>
+</li>
+<li>
+<p>$$
+\bar{X}=AvgPool(X) \in \mathbb{R}^{N \times H}
+$$</p>
+</li>
+<li>
+<p>$$
+A=MLP_3(\bar{X})
+$$</p>
+</li>
+<li>
+<p>$$
+\tilde{T} = \frac{\sum_{i=1}^{H} t_i \ast a_i}{\sum_{i=1}^{H} a_i} \in \mathbb{R}^{N \times 2}
+$$</p>
+</li>
+<li>
+<p>$$
+D=GumbelSoftmax( \tilde{T}) \in {0,1}^N
+$$</p>
+</li>
+</ol>
+<p>1-3是MLP的declaration，4-7是token score branch，8-10是head score branch</p>
+<p>MLP都用降维，因为不是要提取更详细更复杂的特征信息，目标是生成一个简单、清晰、低维的策略 score，而不是保留原始语义。head score最后activation用了Sigmoid，为了便于加权</p>
+<p>token score的部分，为什么保留到2维？这两维分别用于表示keep/prune的概率，这也是这个网络最核心期望学习到的特征，另一方面后续会用到Gumbel Softmax，为了反向传播学习，而不是直接用argmax等来决定是prune还是keep，Gumbel Softmax 是解决“可微分离散选择”的标准做法，SPViT 通过Gumbel Softmax实现了 token pruning 的 end-to-end 训练和部署闭环。</p>
+<p><em><strong>HeatViT:</strong></em></p>
+<h4 id="token-packaging-technique">Token Packaging Technique</h4>
+<p>做这部分packager的原因很简单：1. 直接prune的话仍然是会丢掉不少信息，所以想聚合一下，不直接丢掉信息；2. 另外在transformer里，earlier block受到这种info的丢失影响会更显著；3. 此外在“Instance localization for self-supervised detection pre-training”这篇文章提到了，background信息的过多剔除会导致self-attention提取关键特征的能力降低；4. 结合这些被prune掉的tokens的信息到一个统一的package token里，保有一定的语义信息</p>
+<h3 id="hardware">Hardware</h3>
+<p>硬件主要做了几部分优化：1. 控制流的设计去尽可能多的复用ViT已有的backbone部件；2. 并行化的优化，对于GEMM支持多头的并行处理；3. 优化非线性运算操作；4. LayerNorm是在CPU上做的
+<img alt="image" loading="lazy" src="/blogs/images/SY4EbGvNooVYiHxdTXNcVt8LnVd.png"></p>
+<h3 id="limitations--weakness--further-research">Limitations / Weakness / Further research</h3>
+<p>HeatViT是用可学习的小型网络来选择prune/keep的token，但缺点就是对于特定的图片，在inference的时候整个网络的focus是固定的，但在VLM中实际的focus必然离不开prompt的语言token部分</p>
+<h2 id="vitality-unifying-low-rank-and-sparse-approximation-for-vision-transformer-acceleration-with-a-linear-taylor-attention"><strong>ViTALiTy: Unifying Low-rank and Sparse Approximation for Vision Transformer Acceleration with a Linear Taylor Attention</strong></h2>
+<hr>
+<h3 id="background--target-2">Background &amp; Target</h3>
+<p>we propose a first-of-its-kind algorithm-hardware co-designed framework, dubbed VITALITY, for boosting the inference efficiency of ViTs. Unlike sparsity-based Transformer accelerators for NLP, VITALITY unifies both low-rank and sparse components of the attention in ViTs.</p>
+<h3 id="algorithm-3">Algorithm</h3>
+<h4 id="mean-centered-k">Mean-centered K</h4>
+<h4 id="taylor-softmax-attention">Taylor-softmax attention</h4>
+<p>ViTality想用线性注意力，选择采用taylor来近似exp()，理由很简单，进行了mean-center后的注意力分数大多集中在[-1,1]之间，而在0附近采用Taylor来做近似exp()是不错的选择，所以核心的思路就是用taylor展开的一阶项来近似注意力分数处于[-1,1]之间的weak connection部分，那自然会想到用高阶项来近似strong connection部分，但问题又出现了，高阶的计算及其复杂，很可能就offset掉linear attention带来的优势了，所以需要找方法替代高阶/strong connection的计算，ViTality选择的方法是用Sanger（调整threshold）来以Sparse attention的方式近似处理strong connection。所以一句话总结ViTality算法层面就是：用unified的Linear Taylor Attention以及Sparse Attention来替代传统的Softmax Attention来减小计算复杂度 $$
+O(n^2) \rightarrow O(n)
+$$
+。
+<img alt="image" loading="lazy" src="/blogs/images/FxezbG1ZAoCDCwxGO0DcsceKn3c.png">
+另外注意：ViTality在训练阶段采用的是Linear+Sparse的形式做训练，后者能起到正则化的作用。但是在推理的时候仅仅考虑Linear的部分，而忽视掉了Sparse部分，定然会有些许的掉点但是考虑到其他因素可以接受。</p>
+<h3 id="hardware-1">Hardware</h3>
+<p>micro-architecture
+<img alt="image" loading="lazy" src="/blogs/images/N6ZsbmjUFoLOPLxe5BgcY1s3nqg.png"></p>
+<h4 id="多块式设计chunk-based-design">多块式设计（Chunk-based Design）</h4>
+<ul>
+<li>不用一个可重构处理阵列去跑所有操作（这样开销大），而是分成多块：
+<ul>
+<li>大阵列（SA-General）：负责大规模矩阵乘法，比如 <code>QG</code>、<code>K̂^T V</code>。
+<ul>
+<li>小阵列（SA-Diag）：负责对角矩阵乘法（如 <code>Q k̂_sum^T</code>），乘法量小得多，只用一列PE。</li>
+<li>累加器阵列（Accumulator Array）：列方向求和，用于 <code>k̂_sum</code> 和 <code>v_sum</code> 等。</li>
+<li>除法阵列（Divider Array）：两种模式——单除数（均值化） &amp; 多除数（Taylor 分子分母相除）。</li>
+<li>加法阵列（Adder Array）：元素级加/减（如均值中心化、Taylor 分子分母加法）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>优势：</p>
+<ul>
+<li>
+<p>专用单元避免大阵列跑小任务的浪费。</p>
+</li>
+<li>
+<p>小阵列、轻运算单元功耗低、面积占用小。</p>
+</li>
+<li>
+<p>不同块可并行执行，方便流水线。</p>
+</li>
+</ul>
+<hr>
+<h4 id="四级存储层次memory-hierarchy">四级存储层次（Memory Hierarchy）</h4>
+<ul>
+<li>
+<p>DRAM → SRAM → NoC → 寄存器（Regs）</p>
+<ul>
+<li>DRAM：大容量存储
+<ul>
+<li>SRAM：片上缓存，减少DRAM访问</li>
+<li>NoC：片内传输</li>
+<li>Regs：每个计算单元局部寄存器，配合 systolic array 数据复用</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>数据复用优化：</p>
+<ul>
+<li>矩阵乘法时，让权重或中间结果在PE内驻留（stationary）以减少访存。
+<ul>
+<li><code>V</code> 在计算 <code>K̂^T V</code> 时驻留，<code>G</code> 在计算 <code>QG</code> 时驻留。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="流水线创新intra-layer-pipeline">流水线创新（Intra-Layer Pipeline）</h4>
+<hr>
+<h4 id="数据流创新down-forward-accumulation-dataflow">数据流创新（Down-Forward Accumulation Dataflow）</h4>
+<p><img alt="image" loading="lazy" src="/blogs/images/JSx0b7dyYoGy5Mx5eBycHMj2nPg.png"></p>
+<ul>
+<li>常见两种数据流：
+Output Stationary：输出留在PE内（内累加）	Input Stationary：输入权重留在PE内（行/列移动，向下累加）</li>
+<li>ViTALiTy 的选择：
+<ul>
+<li>全部矩阵乘法统一用 Input Stationary + Down-forward accumulation。
+<ul>
+<li>好处：</li>
+<li>不用为不同矩阵乘法切换累加模式 → 简化PE设计。
+<ul>
+<li>降低 systolic array 功耗（实验表明 systolic array 的能耗占总能耗大头）。</li>
+<li>代价：</li>
+</ul>
+</li>
+<li><code>G</code> 不驻留 → 访存量增加，但总能耗反而下降（因为矩阵乘法能耗减少更多）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="limitations--weakness--further-research-1">Limitations / Weakness / Further research</h3>
+<p>在处理弱连接的时候认为[-1,1]是weak，并用一阶来近似，有一个问题是注意力分布不见得都是大部分为弱连接的，可能随着输入patch或者是不同head等等的变化，甚至会出现大部分为强连接，那这时的掉点可以预想会很严重。&mdash;&mdash;static 判定的不足。</p>
+<p>稀疏部分在训练微调有用，但是在推理的时候用不到：说明sparse attention很可能只起到了正则化作用，而缺乏提供足够语义信息的能力&mdash;可能在一些强局部相关的任务会表现比较差</p>
+<h2 id="vitcod-vision-transformer-acceleration-via-dedicated-algorithm-and-accelerator-co-design"><strong>ViTCoD: Vision Transformer Acceleration via Dedicated Algorithm and Accelerator Co-Design</strong></h2>
+<hr>
+<h3 id="background--target-3">Background &amp; Target</h3>
+<p>ViTs have a relatively fixed number of input tokens, whose attention maps can be pruned by up to 90% even with fixed sparse patterns, without severely hurting the model accuracy</p>
+<h3 id="algorithm-4">Algorithm</h3>
+<p>ViTCoD的核心算法是split and conquer &amp; auto encoder</p>
+<h4 id="vitcods-split-and-conquer-algorithm--hardware"><em>ViTCoD’s Split and Conquer Algorithm / hardware</em></h4>
+<p>ViTCoD采用fixed mask的稀疏格式，扔进去所有数据，算出每一个注意力分数矩阵$$
+A
+$$
+并且求平均，根据这个平均值注意力分数矩阵$$
+\bar{A}
+$$
+来构建一个fixed mask，并且在推理的时候直接用这个mask固定化稀疏模式</p>
+<h4 id="vitcod-learnable-auto-encoder-module"><em>ViTCoD Learnable Auto-encoder Module</em></h4>
+<h3 id="hardware-2">Hardware</h3>
+<h4 id="why">Why</h4>
+<ul>
+<li>ViTCoD 的 S&amp;C 让注意力变成固定且结构化的稀疏，再配合 AE 压缩 Q/K，给硬件提供了两类新机会：
+① 固定稀疏图不再需要在线预测、控制更简单；② Q/K 可被压缩减少数据搬运。然而视觉里的稀疏注意力常沿对角线集中，会造成数据重用差、PE 利用率低且带宽受限，因此需要“算法+加速器”协同设计（文中 roofline 分析明确：仅稀疏还会更受带宽限制，必须再降通信）。</li>
+</ul>
+<h4 id="dataflows-stationary-vs-k-stationary">Dataflow：S-stationary vs K-stationary</h4>
+<ul>
+<li>论文比较了两种做 SDDMM(Q·Kᵀ) 的数据流：
+S-stationary：把注意力得分“空间映射”到 PE 阵列，每个 PE 算一个分数——这对稀疏不友好：PE 利用率低、控制/重构开销大、还要在 PE 寄存器里存大量中间部分和做 intra-PE 累加。代表作 Sanger 用的就是它。
+K-stationary：按列生成注意力分数，K 向量重用充分、中间缓冲小、且只按稀疏索引配对 Q/K 做乘法，天生更适合稀疏。但缺点是Q 访问更频繁——论文说这个缺点由 AE 压缩来缓解（少搬 Q）。结论：选 K-stationary。</li>
+</ul>
+<h4 id="two-pronged">Two-pronged</h4>
+<ul>
+<li>加速器由两套独立计算引擎组成：
+Denser Engine 负责 SDDMM 的“取样致密”部分和后续 SpMM 的 S·V；
+Sparser Engine 负责剩余的高度稀疏部分；
+两路有独立输出缓冲并行写回；芯片内还集成 Encoder/Decoder 引擎去配合 AE，先压再搬、到阵列前再解码。</li>
+</ul>
+<h4 id="denser-engine">Denser Engine</h4>
+<ul>
+<li>
+<p>动态 PE 资源划分：不同层/头的全局 token 数不同，利用已知的固定 mask预估工作量，把 PE/MAC 按比例在 Denser/Sparser 之间分配。</p>
+</li>
+<li>
+<p>并行与切片：各注意力头并行，但单行 PE 线不足以一拍完成 Q·Kᵀ，因此做细粒度切片并设计时空映射：</p>
+<ul>
+<li>SDDMM(Q·Kᵀ)：采用 K-stationary，在特征维对 Q/K 切片并空间映射到 PEs，时间上让同一个 K依次与相关的 Q 相乘，并在 inter-PE 方向做部分和累加（按列生成注意力）。
+<ul>
+<li>SpMM(S·V)：转为 output-stationary，在token 维切片并空间映射，时间上沿特征维累加intra-PE 部分和，减少对注意力图的反复加载、显著降低 on-chip 缓冲压力。两种模式之间需要在 PE 线级别切换“inter-PE ↔ intra-PE”累加。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="sparser-engine">Sparser Engine</h4>
+<ul>
+<li>
+<p>稀疏度可达 &gt;90%，采用 CSC 索引格式预存非零位置，按列（契合 K-stationary 的“按列产出”）取索引，仅加载所需 Q/K；计算只遍历非零。</p>
+</li>
+<li>
+<p>Query-based Q forwarding：两路并行时，Sparser 侧需要的某些 Q 很可能 Denser 侧正在用，因此先查 Denser 的 Q 缓冲再决定是否从 off-chip 取，按需查询降低带宽。其余时空映射策略与 Denser 一致。</p>
+</li>
+<li>
+<p>两路都内置 SoftMax 单元（计算完成单个分数后做 exp）和激活单元（ReLU 用门控，其他用 LUT）。</p>
+</li>
+</ul>
+<h4 id="encoderdecoder-ae-on-chip">Encoder/Decoder （AE on-chip）</h4>
+<ul>
+<li>为配合 AE，芯片上实现了独立的 Encoder/Decoder 引擎（权重很小，如 6×3，可常驻片上）。Encoder 在 Q/K 线性投影之后立即启用，把 Q/K 压缩后再写回 off-chip；Decoder 在加载入阵列前恢复维度。两者都能和数据搬运全流水重叠，空闲时其 PE 线可复用于其他计算。</li>
+</ul>
+<h4 id="on-chip-buffer-and-control-module">on-chip buffer and control module</h4>
+<ul>
+<li>两路引擎都配置了专用缓冲：输出(OBuf)、权重(WBuf)、K/S 缓冲、索引缓冲(IdxBuf)、Q/V 缓冲(Q/V Buf)，多端口并行读写以增强复用；矩阵乘法控制器可在致密/稀疏两类负载间切换；并带 SoftMax/Activation 功能单元。</li>
+</ul>
+<h4 id="编译与可重构algorithm-hardware-interface">编译与可重构（Algorithm-Hardware Interface）</h4>
+<ul>
+<li>给定经过 ViTCoD 训练后的稀疏 ViT 层，网络解析器抽取“全局 token 数、缓冲大小、数据流”等配置，交给硬件编译器生成指令，指导加速器在 Denser/Sparser 之间重分配 on-chip 内存和 PE/MAC，并在 Q·K 与 S·V 两阶段切换 inter-PE ↔ intra-PE 累加模式。一次编译、多次复用摊薄重构成本。</li>
+</ul>
+<h4 id="端到端数据流推理时一次注意力的落地版">端到端数据流（推理时，一次注意力的“落地版”）</h4>
+<ol>
+<li>线性投影→Encoder 压缩（Q/K），回写 off-chip；2) 取下一步需要的 Q/K，Decoder 解压进入片上；3) 依据 reorder 的顺序与固定 mask，把工作拆到两路：</li>
+</ol>
+<ul>
+<li>
+<p>Denser：按 K-stationary 做 Q·Kᵀ（inter-PE 累加），再以 output-stationary 做 S·V（intra-PE 累加）；</p>
+</li>
+<li>
+<p>Sparser：用 CSC 索引只算非零；需要 Q 时先查询 Denser 的 Q 缓冲再决定外取；</p>
+</li>
+</ul>
+<ol>
+<li>两路各自写入独立输出缓冲并行回写/合并。</li>
+</ol>
+<h4 id="key">key</h4>
+<ul>
+<li>
+<p>PE 累加模式切换：SDDMM 用 inter-PE（跨 PE 聚合列方向部分和），SpMM 用 intra-PE（每个 PE 内聚合输出），两阶段在同一 PE 线重配置，这是论文强调的“从 K-stationary（Q·K）切到 output-stationary（S·V）”。</p>
+</li>
+<li>
+<p>为什么 K-stationary 能跑得好：K 被充分重用、中间缓冲更小、且天然匹配“按列产出 + 稀疏按列索引”的实现；其“Q 访问更频繁”的缺点由 AE 抵消。</p>
+</li>
+<li>
+<p>Sparser 的索引与转发：用 CSC 预存非零列索引（配合按列产出），并用 Query-based Q forwarding 在两路间共享 Q，减少 off-chip 访问。</p>
+</li>
+</ul>
+<blockquote>
+<p>硬件平台参数（论文实现）：面积约 <strong>3 mm²</strong>，DDR4-2400 带宽 <strong>76.8 GB/s</strong>，功耗 <strong>323.9 mW@500 MHz</strong>，片上 <strong>320 KB SRAM</strong>。</p></blockquote>
+<h3 id="limitations--weakness--further-research-2">Limitations / Weakness / Further research</h3>
+<hr>
+<ol>
+<li><strong>局限性分析</strong></li>
+</ol>
+<p>(1) 方法层面（S&amp;C + AE）</p>
+<ul>
+<li>
+<p><strong>依赖固定 Mask</strong></p>
+<ul>
+<li>SC（Split &amp; Conquer）的 reorder + prune 依赖一个在 fine-tuning 阶段学到的固定稀疏模式。
+<ul>
+<li>对于输入分布变化大或 domain shift 明显的任务，固定 Mask 可能导致性能退化。</li>
+<li>例如场景变化剧烈（不同类别/布局的图片）时，固定稀疏模式可能错过关键信息。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>无法动态适配注意力模式</strong></p>
+<ul>
+<li>一旦 mask 固定，推理阶段不再根据输入图片动态生成稀疏模式，这在一些需要局部自适应注意力的任务（如物体检测、多目标跟踪）可能限制性能。</li>
+</ul>
+</li>
+<li>
+<p><strong>AE 压缩只针对 Q/K，不覆盖 V 和中间结果</strong></p>
+<ul>
+<li>带宽瓶颈可能在中间阶段转移到 V 或 S·V 阶段，而 AE 主要压缩了 Q/K。</li>
+</ul>
+</li>
+<li>
+<p><strong>Reorder 对多层 ViT 的全局一致性影响未深挖</strong></p>
+<ul>
+<li>不同层的注意力模式差异很大，文中似乎是对单层 mask 进行优化，但对跨层 mask 复用的影响分析不够深入。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>(2) 硬件实现层面</p>
+<ul>
+<li>
+<p><strong>双引擎（Dense/Sparse PE）资源利用率问题</strong></p>
+<ul>
+<li>在某些稀疏度分布下，sparse engine 的利用率可能下降，而 dense engine 可能闲置或饱和，这导致硬件资源不均衡。
+<ul>
+<li>适合固定比例 dense/sparse 的任务，但若稀疏比例波动，性能可能不稳定。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>CSC 稀疏格式存储开销</strong></p>
+<ul>
+<li>CSC 对稀疏度高的情况非常好，但如果后续模型稀疏度下降，索引存储开销相对增加。</li>
+</ul>
+</li>
+<li>
+<p><strong>缺乏多任务并行调度机制</strong></p>
+<ul>
+<li>当前 pipeline 面向单路 attention，VLM/多模态任务往往有多路 cross-attention，需要调度多个 attention kernel 并行工作。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>(3) 任务/应用层面</p>
+<ul>
+<li>
+<p><strong>对下游任务泛化未验证</strong></p>
+<ul>
+<li>主要验证是分类任务（ImageNet），在检测、分割、视频理解等任务上的表现未深入研究。
+<ul>
+<li>稀疏模式在需要保留空间结构信息的任务（比如 dense prediction）可能要重新设计。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>对 Token 语义的敏感性不足</strong></p>
+<ul>
+<li>Reorder 过程是基于 attention map 的排序，而不是直接考虑 token 的语义（比如物体边界、文本区域等）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ol>
+<li><strong>未来可能 Follow 的方向</strong></li>
+</ol>
+<p>方法改进</p>
+<ol>
+<li>
+<p><strong>动态可调稀疏模式</strong></p>
+<ul>
+<li>在推理时根据输入图片的低成本特征（如低分辨率 attention map）调整 sparse block 的 mask。
+<ul>
+<li>可引入轻量的 Gumbel-Softmax / Top-K 筛选器实现动态更新。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>跨层稀疏模式协同优化</strong></p>
+<ul>
+<li>考虑多层 attention pattern 的相关性，在训练阶段优化一个跨层共享的压缩/稀疏策略，减少 mask 存储。</li>
+</ul>
+</li>
+<li>
+<p><strong>多分辨率/分块重排</strong></p>
+<ul>
+<li>在 reorder 过程中融合多尺度 token 信息，让 global block 更好地覆盖多尺寸目标。</li>
+</ul>
+</li>
+<li>
+<p><strong>全路径压缩</strong></p>
+<ul>
+<li>AE 不仅压缩 Q/K，还压缩 V 及中间 S 矩阵（可以用低秩分解），进一步降低带宽。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>硬件优化</p>
+<ol>
+<li>
+<p><strong>弹性双引擎调度</strong></p>
+<ul>
+<li>根据实际稀疏比例动态调整 dense/sparse engine 的分配比例，提升资源利用率。</li>
+</ul>
+</li>
+<li>
+<p><strong>多路 Attention 并行化</strong></p>
+<ul>
+<li>针对 VLM 中的 cross-attention、image-text attention，设计多路并行的 sparse/dense 计算通道。</li>
+</ul>
+</li>
+<li>
+<p><strong>新稀疏存储格式</strong></p>
+<ul>
+<li>针对固定 mask，可预编译成 PE-friendly 的压缩布局，减少索引访问延迟。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<ol>
+<li><strong>在 VLM 时代的适配/改进点</strong></li>
+</ol>
+<p>在 Vision-Language Models 中，ViTCoD 这类结构化稀疏 + 压缩技术仍然有用，但要解决以下问题：</p>
+<ol>
+<li>
+<p><strong>Cross-attention 的稀疏模式不同</strong></p>
+<ul>
+<li>VLM 中 image-to-text attention 与 image self-attention 的稀疏分布差异很大。
+<ul>
+<li>需要对不同类型的 attention 分别设计 mask，或者做多模态联合 mask 学习。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Token 长度更长</strong></p>
+<ul>
+<li>VLM 往往输入长文本 + 高分辨率图像，token 数量可达数千甚至上万，稀疏化带来的收益会更明显，但 mask 存储/调度更复杂。</li>
+</ul>
+</li>
+<li>
+<p><strong>多模态 token 排序问题</strong></p>
+<ul>
+<li>现有 reorder 针对视觉 token，如果混合了文本 token，需要保持跨模态 token 对齐，否则 cross-attention 信息可能受损。</li>
+</ul>
+</li>
+<li>
+<p><strong>对齐/语义保持</strong></p>
+<ul>
+<li>VLM 强调图文对齐，reorder 如果破坏视觉 token 与文本 token 的语义对应，会降低模型性能，需要加入对齐约束。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="vit-slice-end-to-end-vision-transformer-accelerator-with-bit-slice-algorithm"><strong>ViT-slice: End-to-end Vision Transformer Accelerator with Bit-slice Algorithm</strong></h2>
+<hr>
+<h2 id="fnm-trans-efficient-fpga-based-transformer-architecture-with-full-nm-sparsity"><strong>FNM-Trans: Efficient FPGA-based Transformer Architecture with Full N:M Sparsity</strong></h2>
+<hr>
+<h2 id="hg-pipe-vision-transformer-acceleration-with-hybrid-grained-pipeline"><strong>HG-PIPE: Vision Transformer Acceleration with Hybrid-Grained Pipeline</strong></h2>
+<hr>
+<h2 id="fas-trans-fully-exploiting-ffn-and-attention-sparsity-for-transformer-on-fpga"><strong>FAS-Trans: Fully Exploiting FFN and Attention Sparsity for Transformer on FPGA</strong></h2>
+<hr>
+<h2 id="fact-ffn-attention-co-optimized-transformer-architecture-with-eager-correlation-prediction"><strong>FACT: FFN-Attention Co-optimized Transformer Architecture with Eager Correlation Prediction</strong></h2>
+<h2 id="image-4"><img alt="image" loading="lazy" src="/blogs/images/TpsdbnDStoCzBSxZFhhcYIMFnsc.png"></h2>
+<h3 id="background--target-4">Background &amp; Target</h3>
+<hr>
+<h2 id="while-the-attention-computation-focused-by-most-previous-works-only-has-decent-power-share-when-dealing-with-extremely-long-inputs-fact-an-efficient-algorithm-hardware-co-design-optimizing-all-three-modules-of-transformer">While the attention computation, focused by most previous works, only has decent power share when dealing with extremely long inputs. FACT, an efficient algorithm-hardware co-design optimizing all three modules of Transformer</h2>
+<h3 id="algorithm-5">Algorithm</h3>
+<hr>
+<h4 id="ep--eager-prediction">EP &ndash; eager prediction</h4>
+<p>If there exists a few large probabilities in the 𝑆, the rest are very small and can be safely skipped since they have little impact on the output.</p>
+<p>Generating the QK matrices causes much more computation and power than the _𝑄 _· _𝐾 𝑇 _, leading to suboptimal improvement</p>
+<p>EP with cross-stage log-based inner-product estimation, which can reduce not only attention score computation but also the _𝑄𝐾𝑉  _linear projection.</p>
+<h4 id="attention-distribution-aware-qkv-generation">Attention-distribution-aware QKV Generation</h4>
+<p>在 $$
+Eager\ Generation
+$$
+的时候，对于预测注意力分数矩阵$$
+\tilde{A}~
+$$
+,每一行会取 $$
+top-k
+$$
+做filter，然后 $$
+non-top-k
+$$
+呢就直接skip掉，那么由于这样形成的一个跟 $$
+\tilde{A}
+$$
+维度相同的mask矩阵自然会形成一定的sparsity，比如 $$
+\tilde{A}~
+$$
+的某一列全部都被skip掉的话，那么对应反推，在 $$
+Q\ K\ V\ generation
+$$
+的时候，利用 $$
+\tilde{A}~
+$$
+产生的sparsity mask就可以忽略掉一部分的精确计算，从而实现 $$
+Q K V\ generation / FFN\ layers
+$$
+更好的加速。</p>
+<dl>
+<dt>$$</dt>
+<dt>KV\ sparsity</dt>
+<dt>$$</dt>
+<dd>It derives directly from the top-k result of the predicted _𝐴_ˆ matrix. If a column in the _𝐴_ˆ matrix has no values selected by the top-k, the key tensor related to this column is no longer required and can be safely pruned. Similarly, since the V matrix is multiplied by the attention matrix, the row with the same index in V matrix has no effect on the output, either, and can be safely removed.</dd>
+<dt>$$</dt>
+<dt>Q\ sparsity</dt>
+<dt>$$</dt>
+<dd>Hence, when the _𝐴_ˆ matrix is obtained from EP, the difference between the 1 _𝑠𝑡 _and 2 _𝑛𝑑 _value of each row is compared to a threshold (we choose 3 based on experiments). If the former is larger, EP regards this row as being dominated by the largest token and directly uses a one-hot tensor as the _softmax _result where the largest token is assigned with 1.0 probability. In this way, the QK generation and attention computation related to this row can be fully skipped, and all that is needed is to copy the corresponding V tensor as the output.</dd>
+</dl>
+<h4 id="token-wise-mixed-precision-ffn-computation">Token-wise Mixed Precision FFN computation</h4>
+<hr>
+<h3 id="hardware-3">Hardware</h3>
+<hr>
+<h4 id="ep-unit-with-lod-circuit">EP unit with LOD circuit</h4>
+<h4 id="kv-differential-order-a-scheduler-to-better-match-with-the-ep-algorithm">KV-differential order (a scheduler to better match with the EP algorithm)</h4>
+<h4 id="diagonal-storage-pattern-for-mixed-precision-ffn">Diagonal Storage Pattern for Mixed Precision FFN</h4>
+<hr>
+<h3 id="limitations--weakness--further-research-3">Limitations / Weakness / Further research</h3>
+<hr>
+<p>The design concept of FACT and EP is via predicting the redundancy before computation, thus skipping unnecessary computation. FACT’s EP is an output dynamic sparsity method. Further, EP prediction is a unique cross-stage method for Transformer</p>
+<p>感觉token importance的评估方法可以有所改进，尤其是FFN的这个加速方法是不是应该有更合理的判断方法？不知道是否是真的有效果</p>
+<p>另外QKV的sparse部分感觉做的很不错，可以有参考，但是是按照token-wise进行的，直接舍弃掉完整token对应的Q/KV的generation，那么如果带入到多模态里面的话，直接进行这样成token的prune会不会掉点比较严重。</p>
+<h2 id="breaking-the-low-rank-dilemma-of-linear-attention"><strong>Breaking the Low-Rank Dilemma of Linear Attention</strong></h2>
+<hr>
+<h2 id="falcon-resolving-visual-redundancy-and-fragmentation-in-high-resolution-multimodal-large-language-models-via-visual-registers"><strong>FALCON: Resolving Visual Redundancy and Fragmentation in High-resolution Multimodal Large Language Models via Visual Registers</strong></h2>
+<hr>
+<h2 id="qwen25-vl-technical-report"><strong>Qwen2.5-VL Technical Report</strong></h2>
+<hr>
+<h3 id="window-attention">window attention</h3>
+<h4 id="computation-complexity">computation complexity</h4>
+<ol>
+<li>self-attention</li>
+</ol>
+<p>$$
+\Omega(MSA) = 4HW\times d_h\times d_i + 2(HW)^2 \times d_i\
+$$</p>
+<ol>
+<li>window-self-attention</li>
+</ol>
+<p>$$
+\Omega(\text{1-MSA}) = 4M^2\times d_h\times d_i + 2({M^2})^2 \times d_i\
+$$</p>
+<p>$$
+\Omega(\text{W-MSA}) = 4HW\times d_h\times d_i + 2M^2HW\times d_i= HW \times(4d_hd_i+2M^2d_i)\
+$$</p>
+<p>window attention不等价于对MSA做tiling，WMSA是算法级别的注意力掩码（mask），它硬性屏蔽了跨窗口的 token 交互。即便你用相同的 M×M 大小切 patch，如果是全局 Attention，就还是能跨 patch 互相注意；Window Attention 则不行。</p>
+<p>能否有纯硬件调度来支持attention的计算复杂度的降低？可能类似于window MSA这种么，Flashattention就是纯HBM➕算法调度的，但是flashattention基本上做烂了</p>
+<h2 id="blip-2-bootstrapping-language-image-pre-training-with-frozen-image-encoders-and-large-language-models">BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Models</h2>
+<hr>
+<h2 id="divprune-diversity-based-visual-token-pruning-for-large-multimodal-models">DivPrune: Diversity-based Visual Token Pruning for Large Multimodal Models</h2>
+<hr>
+<p>非常取巧的一篇文章，没有按照常规的比如判断importance的方法，而是换了一种prune的思路，采用最大化最小距离，换句话说就是用贪心算法取Visual token的特定元素数量的subset，使得最终该subset内的元素之间的距离最大化（最多样性化）</p>
+<h2 id="todre-visual-token-pruning-via-diversity-and-task-awareness-for-efficient-large-vision-language-models">ToDRE: Visual Token Pruning via Diversity and Task Awareness for Efficient Large Vision-Language Models</h2>
+<p>作者不是很distinguished</p>
+<h3 id="background--target-5">Background &amp; Target</h3>
+<p>同样是考虑diversity的一个prune思路，(cite了上面的DivPrune），额外还有token-task relevance的一个维度，根据两个维度进行prune</p>
+<h3 id="algorithm-6">Algorithm</h3>
+<h2 id="fcot-vladvancing-text-oriented-large-vision-language-models-with-efficient-visual-token-compression"><strong>FCoT-VL:Advancing Text-oriented Large Vision-Language Models with Efficient Visual Token Compression</strong></h2>
+<hr>
+<h2 id="atp-llava-adaptive-token-pruning-for-large-vision-language-models"><strong>ATP-LLaVA: Adaptive Token Pruning for Large Vision Language Models</strong></h2>
+<hr>
+<h2 id="treat-visual-tokens-as-text-but-your-mllm-only-needs-fewer-efforts-to-see"><strong>Treat Visual Tokens as Text? But Your MLLM Only Needs Fewer Efforts to See</strong></h2>
+<hr>
+<h2 id="window-token-concatenation-for-efficient-visual-large-language-models"><strong>Window Token Concatenation for Efficient Visual Large Language Models</strong></h2>
+<hr>
+<h2 id="star-stage-wise-attention-guided-token-reduction-for-efficient-large-vision-language-models-inference"><strong>STAR: Stage-Wise Attention-Guided Token Reduction for Efficient Large Vision-Language Models Inference</strong></h2>
+<hr>
+<h2 id="beyond-attention-or-similarity-maximizing-conditional-diversity-for-token-pruning-in-mllms"><strong>Beyond Attention or Similarity: Maximizing Conditional Diversity for Token Pruning in MLLMs</strong></h2>
+<hr>
+<h2 id="sanger-a-co-design-framework-for-enabling-sparse-attention-using-reconfigurable-architecture"><strong>Sanger: A Co-Design Framework for Enabling Sparse Attention using Reconfigurable Architecture</strong></h2>
+<hr>
+]]></content:encoded>
     </item>
   </channel>
 </rss>

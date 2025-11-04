@@ -16,12 +16,15 @@ module.exports = {
       outputDir: './content/posts',
       filename: 'title',
       format: 'markdown',
-      catalog: false,
-      formatExt: '',
-      frontmatter: {
+      catalog: true,
+      frontMatter: {
         enable: true,
-        include: ['title', 'date', 'updated', 'tags'],
-        timeFormat: 'yyyy-MM-dd HH:mm:ss'
+        include: ['title', 'date'],
+        timeFormat: 'yyyy-MM-dd HH:mm:ss',
+        template: `---
+title: "{{ title }}"
+date: "{{ date }}"
+---`
       }
     }
   },
@@ -34,3 +37,4 @@ module.exports = {
     }
   }
 }
+
