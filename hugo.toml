@@ -67,6 +67,10 @@ name = "kaggle"
 url = "https://www.kaggle.com/larielo"
 
 [[params.socialIcons]]
+name = "email"
+url = "jyybzjyybz@gmail.com"
+
+[[params.socialIcons]]
 name = "rss"
 url = "/blogs/index.xml"
 
